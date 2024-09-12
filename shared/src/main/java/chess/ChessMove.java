@@ -7,7 +7,7 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessMove {
-
+//implement toString() somewhere here...
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
     }
