@@ -16,6 +16,11 @@ public class ChessPosition {
         this.col = col;
     }
 
+    @Override
+    public String toString(){
+        return "("+(getRow())+", "+(getColumn())+")";
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
@@ -32,5 +37,9 @@ public class ChessPosition {
     public int getColumn() {
 //    throw new RuntimeException("Not implemented");
         return col;
+    }
+
+    public ChessPosition move(int changeRow, int changeCol){
+        return new ChessPosition(this.row + changeRow, this.col+ changeCol);
     }
 }

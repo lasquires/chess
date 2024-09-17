@@ -36,12 +36,39 @@ public class ChessBoard {
 
     }
 
+    public boolean isEnemy(ChessPosition myPosition, ChessPosition newPosition){
+        if (getPiece(newPosition)!=null){
+            return (getPiece(myPosition).getTeamColor()!=getPiece(newPosition).getTeamColor());
+        }
+        else{
+            return false;}
+    }
+
+    /** Returns boolean whether or not a position is valid
+     *
+     */
+    public boolean isValidPosition(ChessPosition position){
+        int row = position.getRow();
+        int col = position.getColumn();
+
+        return row >= 0 && row < 8 && col >= 0 && col < 8;
+    }
+
+    public boolean isEmpty(ChessPosition position){
+        return (getPiece(position)) == null;
+    }
+
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-
+        for (int row = 0; row < 8; row++){
+            for (int col = 0; col < 8; col++){
+                squares[row][col] = null;
+            }
+        }
 
 //        throw new RuntimeException("Not implemented");
     }

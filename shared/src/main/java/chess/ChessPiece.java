@@ -10,10 +10,16 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    private final ChessGame.TeamColor pieceColor;
+    private PieceType pieceType;
+    private PieceMovesCalculator movesCalculator;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    //constructor
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType pieceType) {
+        this.pieceColor = pieceColor;
+        this.pieceType = pieceType;
+        this.movesCalculator = getCalculator(pieceType);
     }
-
     /**
      * The various different chess piece options
      */
@@ -26,18 +32,36 @@ public class ChessPiece {
         PAWN
     }
 
+
+    private PieceMovesCalculator getCalculator(PieceType pieceType){
+        System.out.println("in PieceMovesCalculator");
+        switch (pieceType){
+            case KING -> new KingMovesCalculator();
+            case QUEEN -> new QueenMovesCalculator();
+            case BISHOP -> {return new BishopMovesCalculator();} //idk why this
+            case KNIGHT -> new KnightMovesCalculator();
+            case ROOK -> new RookMovesCalculator();
+            case PAWN -> new PawnMovesCalculator();
+            default -> new IllegalArgumentException("Invalid piece type");
+
+        }
+        return null;
+    }
+
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.pieceColor;
+        //        throw new RuntimeException("Not implemented");
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.pieceType;
+//        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -50,6 +74,16 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 //        throw new RuntimeException("Not implemented");
         //following line is temporary
-        return new ArrayList<>();
+        System.out.println("In pieceMoves");
+        System.out.println(this.movesCalculator.calculateMoves(board, myPosition));
+        return this.movesCalculator.calculateMoves(board, myPosition);
+
+        // TODO in piece move calculator calculate all possible moves given piece type
+        // TODO: in piece move calculator look at board, see possible moves given rules
+        // TODO here, set the piece to the new location, set old location to null
+
+        // TODO return current board as array
+
+//        return new ArrayList<>();
     }
 }
