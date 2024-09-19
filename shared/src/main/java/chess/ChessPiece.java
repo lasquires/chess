@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,12 +16,17 @@ public class ChessPiece {
     private PieceType pieceType;
     private PieceMovesCalculator movesCalculator;
 
+    private List<ChessMove> moveHistory;
+
     //constructor
+
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType pieceType) {
         this.pieceColor = pieceColor;
         this.pieceType = pieceType;
         this.movesCalculator = getCalculator(pieceType);
+        this.moveHistory = new ArrayList<>();
     }
+
     /**
      * The various different chess piece options
      */
@@ -30,19 +36,26 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN;
+    }
+    public List<ChessMove> getMoveHistory() {
+        return moveHistory;
+    }
+
+    public void addToMoveHistory(ChessMove move) {
+        this.moveHistory.add(move);
     }
 
 
     private PieceMovesCalculator getCalculator(PieceType pieceType){
         System.out.println("in PieceMovesCalculator");
         switch (pieceType){
-            case KING -> new KingMovesCalculator();
-            case QUEEN -> new QueenMovesCalculator();
+            case KING -> {return new KingMovesCalculator();}
+            case QUEEN -> {return new QueenMovesCalculator();}
             case BISHOP -> {return new BishopMovesCalculator();} //idk why this
-            case KNIGHT -> new KnightMovesCalculator();
-            case ROOK -> new RookMovesCalculator();
-            case PAWN -> new PawnMovesCalculator();
+            case KNIGHT -> {return new KnightMovesCalculator();}
+            case ROOK -> {return new RookMovesCalculator();}
+            case PAWN -> {return new PawnMovesCalculator();}
             default -> new IllegalArgumentException("Invalid piece type");
 
         }
@@ -64,6 +77,7 @@ public class ChessPiece {
         return this.pieceType;
 //        throw new RuntimeException("Not implemented");
     }
+
 
     @Override
     public String toString() {
@@ -106,6 +120,7 @@ public class ChessPiece {
         // TODO here, set the piece to the new location, set old location to null
 
         // TODO return current board as array
+        //if succesful move, set moveHistory to true
 
 //        return new ArrayList<>();
     }

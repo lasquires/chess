@@ -27,16 +27,17 @@ public class ChessMove {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
+    @Override
+    public String toString(){
+        return "Move " + promotionPiece + " from " + startPosition + " to " + endPosition;
+    }
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
 
-    }
-    @Override
-    public String toString(){
-        return "Move " + promotionPiece + " from " + startPosition + " to " + endPosition;
     }
 
     /**
