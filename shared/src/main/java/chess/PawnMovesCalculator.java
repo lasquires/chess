@@ -15,9 +15,11 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         //Default is white, if black, it will change
         int startRow = 2;
         int modifier = 1;
+        int promotionRow = 8;
         if (color== ChessGame.TeamColor.BLACK){
             startRow = 7;
             modifier = -1;
+            promotionRow = 1;
         }
 
         List<int[]> pawnMoves = new ArrayList<>();
@@ -47,11 +49,48 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         }
 
 
-
-
-
-
         int[][] pawnMovesArray = pawnMoves.toArray(new int[0][]);
-        return ChessUtils.calculateSingleMoves(board, myPosition, pawnMovesArray, ChessPiece.PieceType.PAWN);
+        for (int[] direction : pawnMovesArray){
+            ChessPosition newPosition = myPosition;
+            System.out.println("Calculating move from " + myPosition + " to " + newPosition);
+
+
+            newPosition = newPosition.move(direction[0], direction[1]);
+
+            if (!board.isValidPosition(newPosition)){
+                continue;  //off board
+            }
+
+            if (board.isEmpty(newPosition)){
+                if(newPosition.getRow()==promotionRow){
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+                }
+                else {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
+            //capture enemy, then stop
+            else if (board.isEnemy(myPosition, newPosition)) {
+                if(newPosition.getRow()==promotionRow){
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+                }
+                else {
+                    moves.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }else{ //ally in the way, stop
+                continue;
+            }
+
+        }
+        return moves;
+
+
+//        return ChessUtils.calculateSingleMoves(board, myPosition, pawnMovesArray, ChessPiece.PieceType.PAWN);
     }
 }
