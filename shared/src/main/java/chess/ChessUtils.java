@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessUtils {
+
+
+
+    //for the "move until" things
     public static Collection<ChessMove> calculateLinearMoves(ChessBoard board, ChessPosition myPosition, int[][] directions, ChessPiece.PieceType pieceType){
         Collection<ChessMove> moves = new ArrayList<>();
 
@@ -19,11 +23,11 @@ public class ChessUtils {
                 }
 
                 if (board.isEmpty(newPosition)){
-                    moves.add(new ChessMove(myPosition, newPosition, pieceType));
+                    moves.add(new ChessMove(myPosition, newPosition, null));
                     }
                 //capture enemy, then stop
                 else if (board.isEnemy(myPosition, newPosition)) {
-                    moves.add(new ChessMove(myPosition, newPosition, pieceType)); //capture
+                    moves.add(new ChessMove(myPosition, newPosition, null)); //capture
                     break;
                 }else{ //ally in the way, stop
                     break;
