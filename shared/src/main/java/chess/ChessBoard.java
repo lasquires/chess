@@ -59,13 +59,21 @@ public class ChessBoard {
 
     }
 
-    public boolean isEnemy(ChessPosition myPosition, ChessPosition newPosition){
-        if (getPiece(newPosition)!=null){
-            return (getPiece(myPosition).getTeamColor()!=getPiece(newPosition).getTeamColor());
+    public boolean isEnemy(ChessPosition myPosition, ChessPosition newPosition) {
+        if (newPosition.getRow() > 0
+                && newPosition.getRow() <= 8
+                && newPosition.getColumn() > 0
+                && newPosition.getColumn() <= 8) {
+            if (getPiece(newPosition) != null) {
+                return (getPiece(myPosition).getTeamColor() != getPiece(newPosition).getTeamColor());
+            } else {
+                return false;
+            }
         }
-        else{
-            return false;}
+        return false;
     }
+
+
 
     /** Returns boolean whether or not a position is valid
      *
