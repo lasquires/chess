@@ -26,6 +26,18 @@ public class ChessPosition {
         return this.row;
     }
 
+    /**
+     * @return which column this position is in
+     * 1 codes for the left row
+     */
+    public int getColumn() {
+        return this.col;
+    }
+
+    public ChessPosition move(int changeRow, int changeCol) {
+        return new ChessPosition(this.row+changeRow, this.col+changeCol);
+    }
+
     @Override
     public String toString() {
         return "ChessPosition{" +
@@ -45,17 +57,5 @@ public class ChessPosition {
     @Override
     public int hashCode() {
         return Objects.hash(row, col);
-    }
-
-    /**
-     * @return which column this position is in
-     * 1 codes for the left row
-     */
-    public int getColumn() {
-        return this.col;
-    }
-
-    public ChessPosition move(int changeRow, int changeCol) {
-        return new ChessPosition(this.row+changeRow, this.col+changeCol);
     }
 }

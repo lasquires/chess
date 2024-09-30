@@ -11,7 +11,6 @@ import chess.calculators.RookMovesCalculator;
 import java.util.Collection;
 import java.util.Objects;
 
-
 import java.util.Collection;
 import java.util.Objects;
 
@@ -47,6 +46,7 @@ public class ChessPiece {
 
     }
 
+
     /**
      * The various different chess piece options
      */
@@ -56,14 +56,32 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
-    }
+        PAWN;
 
+    }
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
         return this.pieceColor;
+    }
+
+    /**
+     * @return which type of chess piece this piece is
+     */
+    public PieceType getPieceType() {
+        return this.type;
+    }
+
+    /**
+     * Calculates all the positions a chess piece can move to
+     * Does not take into account moves that are illegal due to leaving the king in
+     * danger
+     *
+     * @return Collection of valid moves
+     */
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        return this.movesCalculator.getMoves(board, myPosition);
     }
 
     @Override
@@ -85,23 +103,5 @@ public class ChessPiece {
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);
-    }
-
-    /**
-     * @return which type of chess piece this piece is
-     */
-    public PieceType getPieceType() {
-        return this.type;
-    }
-
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return this.movesCalculator.getMoves(board, myPosition);
     }
 }
