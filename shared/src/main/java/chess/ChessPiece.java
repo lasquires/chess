@@ -1,5 +1,17 @@
 package chess;
 
+import chess.calculators.BishopMovesCalculator;
+import chess.calculators.KingMovesCalculator;
+import chess.calculators.KnightMovesCalculator;
+import chess.calculators.PawnMovesCalculator;
+import chess.calculators.PieceMovesCalculator;
+import chess.calculators.QueenMovesCalculator;
+import chess.calculators.RookMovesCalculator;
+
+import java.util.Collection;
+import java.util.Objects;
+
+
 import java.util.Collection;
 import java.util.Objects;
 
