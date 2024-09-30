@@ -1,23 +1,23 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class KingMovesCalculator implements PieceMovesCalculator{
+public class KingMovesCalculator implements PieceMovesCalculator {
     @Override
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition) {
-//        Collection<ChessMove> moves = new ArrayList<>();
-        int[][] kingMoves = {
-                {1, 0}, //up
-                {-1, 0}, //down
-                {0, -1}, //left
-                {0, 1}, // right
-                {1, 1}, //up-right
-                {-1, 1}, //down-right
-                {-1, -1}, //down-left
-                {1, -1} // up-left
+    public Collection<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition) {
+        int[][] directions = {
+                {1,0},//right
+                {0,1},//up
+                {-1,0},//left
+                {0,-1},//down
+                {1,1},//right-up
+                {-1,1},//left-up
+                {-1,-1},//left-down
+                {1,-1},//right-down
+
+
         };
-        return ChessUtils.calculateSingleMoves(board, myPosition, kingMoves, ChessPiece.PieceType.KING);
+        return ChessUtils.CalculateSingleMoves(board, myPosition, directions);
     }
 }

@@ -1,19 +1,17 @@
 package chess;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.List;
 
 public class BishopMovesCalculator implements PieceMovesCalculator {
     @Override
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition) {
-        System.out.println("In bishopmovesCalculator");
-        Collection<ChessMove> moves = new ArrayList<>();
-        int[][] bishopMoves = {
-                {1, 1}, //down-right
-                {-1, 1}, //up-right
-                {-1, -1}, //up-left
-                {1, -1} // down-left
+    public Collection<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition) {
+        int[][] directions = {
+                {1,1},//right-up
+                {-1,1},//left-up
+                {-1,-1},//left-down
+                {1,-1},//right-down
         };
-        return ChessUtils.calculateLinearMoves(board, myPosition, bishopMoves, ChessPiece.PieceType.BISHOP);
+        return ChessUtils.CalculateLinearMoves(board, myPosition, directions);
     }
 }

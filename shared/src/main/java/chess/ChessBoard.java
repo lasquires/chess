@@ -15,6 +15,24 @@ public class ChessBoard {
         
     }
 
+    /**
+     * Adds a chess piece to the chessboard
+     *
+     * @param position where to add the piece to
+     * @param piece    the piece to add
+     */
+    public void addPiece(ChessPosition position, ChessPiece piece) {
+        squares[position.getRow()-1][position.getColumn()-1] = piece;
+
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "squares=" + Arrays.toString(squares) +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,24 +46,6 @@ public class ChessBoard {
         return Arrays.deepHashCode(squares);
     }
 
-    @Override
-    public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.deepToString(squares) +
-                '}';
-    }
-
-    /**
-     * Adds a chess piece to the chessboard
-     *
-     * @param position where to add the piece to
-     * @param piece    the piece to add
-     */
-    public void addPiece(ChessPosition position, ChessPiece piece) {
-        //throw new RuntimeException("Not implemented");
-        squares[position.getRow()-1][position.getColumn()-1] = piece;
-    }
-
     /**
      * Gets a chess piece on the chessboard
      *
@@ -54,139 +54,66 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-//        throw new RuntimeException("Not implemented");
         return squares[position.getRow()-1][position.getColumn()-1];
-
     }
-
-    public boolean isEnemy(ChessPosition myPosition, ChessPosition newPosition) {
-        if (newPosition.getRow() > 0
-                && newPosition.getRow() <= 8
-                && newPosition.getColumn() > 0
-                && newPosition.getColumn() <= 8) {
-            if (getPiece(newPosition) != null) {
-                return (getPiece(myPosition).getTeamColor() != getPiece(newPosition).getTeamColor());
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-
-
-    /** Returns boolean whether or not a position is valid
-     *
-     */
-    public boolean isValidPosition(ChessPosition position){
-        int row = position.getRow();
-        int col = position.getColumn();
-
-        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
-    }
-
-    public boolean isEmpty(ChessPosition position){
-        return (getPiece(position)) == null;
-    }
-
 
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        //clears board
-        for (int row = 0; row < 8; row++){
-            for (int col = 0; col < 8; col++){
-                squares[row][col] = null;
+        for (int row=0; row<8;row++){
+            for (int col=0;col<8;col++){
+                squares[row][col]=null;
+                //pawns
+                squares[1][col]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+                squares[6][col]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
             }
         }
-        //kings
+        //King
         squares[0][4]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         squares[7][4]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        //queens
+        //Queen
         squares[0][3]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
         squares[7][3]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        //bishops
+        //Bishop
         squares[0][2]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         squares[0][5]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         squares[7][2]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         squares[7][5]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        //knights
+
+        //Knight
         squares[0][1]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         squares[0][6]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         squares[7][1]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
         squares[7][6]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        //rooks
+        //Rook
         squares[0][0]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         squares[0][7]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         squares[7][0]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
         squares[7][7]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        //pawns
-        for (int col = 0; col <8; col++){
-            squares[1][col]=new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-            squares[6][col]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-        }
 
 
-//        throw new RuntimeException("Not implemented");
+
+
+
+
+
+    }
+
+    public boolean IsOnBoard(ChessPosition newPosition) {
+        int row = newPosition.getRow();
+        int col = newPosition.getColumn();
+        return row>=1 && row <=8 && col>=1 && col <=8;
+    }
+
+    public boolean IsEmpty(ChessPosition newPosition) {
+        return IsOnBoard(newPosition)&&getPiece(newPosition)==null;
+    }
+
+    public boolean IsEnemy(ChessPosition myPosition, ChessPosition newPosition) {
+        return IsOnBoard(newPosition)
+                && getPiece(newPosition)!=null
+                && getPiece(myPosition).getTeamColor()!=getPiece(newPosition).getTeamColor();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

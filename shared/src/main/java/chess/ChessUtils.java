@@ -4,32 +4,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessUtils {
-
-
-
-    //for the "move until" things (Queen, Rook, Bishop)
-    public static Collection<ChessMove> calculateLinearMoves(ChessBoard board, ChessPosition myPosition, int[][] directions, ChessPiece.PieceType pieceType){
+    public static Collection<ChessMove> CalculateLinearMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        for (int[] direction : directions){
+        for (int[] direction: directions){
             ChessPosition newPosition = myPosition;
-            System.out.println("Calculating move from " + myPosition + " to " + newPosition);
-
             while (true){
-                newPosition = newPosition.move(direction[0], direction[1]);
+                newPosition = newPosition.move(direction[0],direction[1]);
 
-                if (!board.isValidPosition(newPosition)){
-                    break;  //off board
+                if(!board.IsOnBoard(newPosition)){
+                    break;//isn't on board.
                 }
-
-                if (board.isEmpty(newPosition)){
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                //capture enemy, then stop
-                else if (board.isEnemy(myPosition, newPosition)) {
-                    moves.add(new ChessMove(myPosition, newPosition, null)); //capture
+                if(board.IsEmpty(newPosition)){
+                    moves.add(new ChessMove(myPosition, newPosition, null));//addmove and continue;
+                }
+                else if (board.IsEnemy(myPosition, newPosition)){
+                    moves.add(new ChessMove(myPosition,newPosition,null));//addMove then break;
                     break;
-                }else{ //ally in the way, stop
+                } else{
                     break;
                 }
             }
@@ -37,34 +29,25 @@ public class ChessUtils {
         return moves;
     }
 
-
-    //for the "move once" things (King, Knight, Pawn (under special circumstance)
-    public static Collection<ChessMove> calculateSingleMoves(ChessBoard board, ChessPosition myPosition, int[][] directions, ChessPiece.PieceType pieceType){
+    public static Collection<ChessMove> CalculateSingleMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         Collection<ChessMove> moves = new ArrayList<>();
-        for (int[] direction : directions){
-            ChessPosition newPosition = myPosition;
-            System.out.println("Calculating move from " + myPosition + " to " + newPosition);
 
+        for (int[] direction: directions){
+            ChessPosition newPosition = myPosition.move(direction[0],direction[1]);
 
-            newPosition = newPosition.move(direction[0], direction[1]);
-
-            if (!board.isValidPosition(newPosition)){
-                continue;  //off board
+            if(!board.IsOnBoard(newPosition)){
+                continue;//isn't on board.
             }
-
-            if (board.isEmpty(newPosition)){
-                moves.add(new ChessMove(myPosition, newPosition, null));
+            if(board.IsEmpty(newPosition)){
+                moves.add(new ChessMove(myPosition, newPosition, null));//addmove and continue;
             }
-            //capture enemy, then stop
-            else if (board.isEnemy(myPosition, newPosition)) {
-                moves.add(new ChessMove(myPosition, newPosition, null)); //capture
+            else if (board.IsEnemy(myPosition, newPosition)){
+                moves.add(new ChessMove(myPosition,newPosition,null));//addMove then break;
                 continue;
-            }else{ //ally in the way, stop
+            } else{
                 continue;
             }
-
         }
         return moves;
     }
-
 }

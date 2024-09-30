@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -12,19 +10,29 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
+
     private final ChessGame.TeamColor pieceColor;
-    private PieceType pieceType;
+    private final PieceType type;
     private PieceMovesCalculator movesCalculator;
 
-    private List<ChessMove> moveHistory;
-
-    //constructor
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType pieceType) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
-        this.pieceType = pieceType;
-        this.movesCalculator = getCalculator(pieceType);
-        this.moveHistory = new ArrayList<>();
+        this.type = type;
+        this.movesCalculator = getCalculator(type);
+    }
+
+    private PieceMovesCalculator getCalculator(PieceType type) {
+        switch(type){
+            case KING -> {return new KingMovesCalculator();}
+            case QUEEN ->{return new QueenMovesCalculator();}
+            case BISHOP -> {return new BishopMovesCalculator();}
+            case KNIGHT -> {return new KnightMovesCalculator();}
+            case ROOK -> {return new RookMovesCalculator();}
+            case PAWN -> {return new PawnMovesCalculator();}
+            default -> new IllegalArgumentException("Invalid piece type");
+        }
+        return null;
+
     }
 
     /**
@@ -36,30 +44,7 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN;
-    }
-    public List<ChessMove> getMoveHistory() {
-        return moveHistory;
-    }
-
-    public void addToMoveHistory(ChessMove move) {
-        this.moveHistory.add(move);
-    }
-
-
-    private PieceMovesCalculator getCalculator(PieceType pieceType){
-        System.out.println("in PieceMovesCalculator");
-        switch (pieceType){
-            case KING -> {return new KingMovesCalculator();}
-            case QUEEN -> {return new QueenMovesCalculator();}
-            case BISHOP -> {return new BishopMovesCalculator();} //idk why this
-            case KNIGHT -> {return new KnightMovesCalculator();}
-            case ROOK -> {return new RookMovesCalculator();}
-            case PAWN -> {return new PawnMovesCalculator();}
-            default -> new IllegalArgumentException("Invalid piece type");
-
-        }
-        return null;
+        PAWN
     }
 
     /**
@@ -67,24 +52,13 @@ public class ChessPiece {
      */
     public ChessGame.TeamColor getTeamColor() {
         return this.pieceColor;
-        //        throw new RuntimeException("Not implemented");
     }
-
-    /**
-     * @return which type of chess piece this piece is
-     */
-    public PieceType getPieceType() {
-        return this.pieceType;
-//        throw new RuntimeException("Not implemented");
-    }
-
 
     @Override
     public String toString() {
         return "ChessPiece{" +
                 "pieceColor=" + pieceColor +
-                ", pieceType=" + pieceType +
-                ", movesCalculator=" + movesCalculator +
+                ", type=" + type +
                 '}';
     }
 
@@ -93,12 +67,19 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && pieceType == that.pieceType;
+        return pieceColor == that.pieceColor && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pieceColor, pieceType, movesCalculator);
+        return Objects.hash(pieceColor, type);
+    }
+
+    /**
+     * @return which type of chess piece this piece is
+     */
+    public PieceType getPieceType() {
+        return this.type;
     }
 
     /**
@@ -109,19 +90,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-//        throw new RuntimeException("Not implemented");
-        //following line is temporary
-        System.out.println("In pieceMoves");
-        System.out.println(this.movesCalculator.calculateMoves(board, myPosition));
-        return this.movesCalculator.calculateMoves(board, myPosition);
-
-        // TODO in piece move calculator calculate all possible moves given piece type
-        // TODO: in piece move calculator look at board, see possible moves given rules
-        // TODO here, set the piece to the new location, set old location to null
-
-        // TODO return current board as array
-        //if succesful move, set moveHistory to true
-
-//        return new ArrayList<>();
+        return this.movesCalculator.getMoves(board, myPosition);
     }
 }
