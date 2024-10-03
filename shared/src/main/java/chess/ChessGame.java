@@ -77,7 +77,7 @@ public class ChessGame {
             return null;
         }
         return piece.pieceMoves(board, startPosition);
-        //TODO: add in logic for check, castling, and en passent
+        //TODO: add in logic for check, castling, and en passant
     }
 
     /**
@@ -96,7 +96,7 @@ public class ChessGame {
         var piece = board.getPiece(startPos);
         board.addPiece(endPos, piece); //move
         board.addPiece(startPos, null); //clear old
-        //TODO: add in logic for check, castling, and en passent
+        //TODO: add in logic for check, castling, and en passant
         //switch turns
         if (this.turn==TeamColor.WHITE){
             this.turn=TeamColor.BLACK;
@@ -123,7 +123,7 @@ public class ChessGame {
                 var pos = new ChessPosition(row, col);
                 var piece = board.getPiece(pos);
                 if (piece!=null && piece.getTeamColor()!=teamColor){
-                    Collection<ChessMove> possibleMoves = piece.pieceMoves(board, pos);
+                    Collection<ChessMove> possibleMoves = validMoves(pos);
                     for (var move: possibleMoves){
                         if (move.getEndPosition().equals(kingPos)){     //I hate how nested this is but oh well;
                             return true; //is in check;
@@ -156,7 +156,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
+            return simulateMoves(teamColor);
+        }
+        return false;
     }
 
     /**
@@ -167,7 +171,35 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //for move in all moves, if newPosition isInCheck and startPosition !isInCheck, return true;
+        if(!isInCheck(teamColor)){
+            //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
+            //will return if is in stalemate
+            return simulateMoves(teamColor);
+        }
+        return false;
+    }
+
+    private boolean simulateMoves(TeamColor teamColor) {
+        for (int row=1;row<=8;row++){
+            for (int col=1;col<=8;col++){
+                ChessPosition pos = new ChessPosition(row,col);
+                ChessPiece piece= board.getPiece(pos);
+                if (piece != null && piece.getTeamColor()==teamColor){
+                    //for move in moves, simulate, then see if the king is in check
+                    Collection<ChessMove> possibleMoves = validMoves(pos);
+                    for (var move: possibleMoves){
+                        ChessBoard simBoard = new ChessBoard(board);
+                        simBoard.addPiece(move.getEndPosition(), piece);//add move
+                        simBoard.addPiece(pos,null);//clear old
+                        if (!isInCheck(teamColor)){
+                            return false; //can make a move that gets doesn't result in check
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -176,7 +208,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board.resetBoard();
     }
 
     /**
@@ -185,6 +217,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
