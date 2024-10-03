@@ -15,6 +15,23 @@ public class ChessBoard {
         
     }
 
+    //using this to simulate a new board
+    public ChessBoard(ChessBoard newBoard) {
+        this.squares = new ChessPiece[8][8];
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = newBoard.squares[row][col];
+                if (piece != null) {
+                    this.squares[row][col] = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                }
+                else {
+                    this.squares[row][col] = null;
+                }
+            }
+        }
+    }
+
+
     /**
      * Adds a chess piece to the chessboard
      *
