@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -11,6 +12,27 @@ import java.util.Collection;
 public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "board=" + board +
+                ", turn=" + turn +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && turn == chessGame.turn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, turn);
+    }
 
     public ChessGame() {
         this.board = new ChessBoard();
@@ -94,7 +116,37 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //get position of king of given color
+        var kingPos = findKing(teamColor);
+        for (int row=1;row<=8;row++){
+            for (int col=1;col<=8;col++){
+                var pos = new ChessPosition(row, col);
+                var piece = board.getPiece(pos);
+                if (piece!=null && piece.getTeamColor()!=teamColor){
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(board, pos);
+                    for (var move: possibleMoves){
+                        if (move.getEndPosition().equals(kingPos)){     //I hate how nested this is but oh well;
+                            return true; //is in check;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+    }
+
+    private chess.ChessPosition findKing(TeamColor teamColor) {
+        for (int row=1; row<=8; row++){
+            for (int col=1;col<=8;col++){
+                var pos = new ChessPosition(row, col);
+                var piece = board.getPiece(pos);
+                if (piece!= null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor()== teamColor){
+                    return pos;
+                }
+            }
+        }
+        throw new IllegalStateException("King not found");
     }
 
     /**
