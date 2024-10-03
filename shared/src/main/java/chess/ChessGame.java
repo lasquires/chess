@@ -9,16 +9,20 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private ChessBoard board;
+    private TeamColor turn;
 
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        this.turn = TeamColor.WHITE;
+        this.board.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.turn;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.turn = team;
     }
 
     /**
@@ -46,7 +50,12 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        var piece = board.getPiece(startPosition);
+        if (piece == null || piece.getTeamColor() != this.turn){
+            return null;
+        }
+        return piece.pieceMoves(board, startPosition);
+        //TODO: add in logic for check, castling, and en passent
     }
 
     /**
@@ -56,7 +65,26 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        var startPos = move.getStartPosition();
+        var endPos = move.getEndPosition();
+        if (!validMoves(startPos).contains(move)){
+            throw new InvalidMoveException("Invalid move");
+        }
+        //else make the move
+        var piece = board.getPiece(startPos);
+        board.addPiece(endPos, piece); //move
+        board.addPiece(startPos, null); //clear old
+        //TODO: add in logic for check, castling, and en passent
+        //switch turns
+        if (this.turn==TeamColor.WHITE){
+            this.turn=TeamColor.BLACK;
+        }
+        else{
+            this.turn=TeamColor.WHITE;
+        }
+
+
+
     }
 
     /**
