@@ -74,11 +74,15 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var piece = board.getPiece(startPosition);
-        if (piece == null || piece.getTeamColor() != this.turn){
+        if (piece == null){// || piece.getTeamColor() != this.turn){
             return new ArrayList<>();
         }
         var possibleMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
+
+        var kingPos = findKing(piece.getTeamColor());
+        boolean kingInCheck = isInCheck(piece.getTeamColor());
+
         for (var move: possibleMoves){
             ChessBoard simBoard= new ChessBoard(board);
             simBoard.addPiece(move.getEndPosition(), piece);
@@ -88,9 +92,17 @@ public class ChessGame {
             ChessGame simGame = new ChessGame();
             simGame.setBoard(simBoard);
 
-            if (!simGame.isInCheck(piece.getTeamColor())){
-                validMoves.add(move);
+            if(kingInCheck){//if king in check in game
+                if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
+                    validMoves.add(move);
+                }
+            }else{
+                //add in all moves that don't put the king in check
+                if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
+                    validMoves.add(move);
+                }
             }
+
         }
 
         return validMoves;
