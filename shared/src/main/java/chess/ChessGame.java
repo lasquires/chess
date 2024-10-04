@@ -74,34 +74,41 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var piece = board.getPiece(startPosition);
-        if (piece == null){// || piece.getTeamColor() != this.turn){
+
+        if (piece == null){//if the position doesn't have a piece, it can't move
             return new ArrayList<>();
         }
-        var possibleMoves = piece.pieceMoves(board, startPosition);
+
+        //what piece's rules say the piece can do
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        //what it actually can do given the boardstate
         Collection<ChessMove> validMoves = new ArrayList<>();
+        //TODO: add in logic for castling, and en passant
 
-        var kingPos = findKing(piece.getTeamColor());
-        boolean kingInCheck = isInCheck(piece.getTeamColor());
+        //If canCastle, add castle to possibleMoves
 
-        for (var move: possibleMoves){
+        //if can en passant, add to possibleMoves
+
+        for (ChessMove move: possibleMoves){
+            //get temporary boardState to manipulate
             ChessBoard simBoard= new ChessBoard(board);
 
-            simBoard.addPiece(move.getEndPosition(), piece);
+            //make the move on the simulation board
+            simBoard.addPiece(move.getEndPosition(), piece); //promotion is irrelevant
             simBoard.addPiece(startPosition, null);
 
-            //make game simulation--not just board, to check for color
+            //make game simulation based on the board
             ChessGame simGame = new ChessGame();
             simGame.setBoard(simBoard);
 
-            //and if the sim game doesn't have him in check
-            if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
+            //if the move didn't put the king in check, add the move
+            if (!simGame.isInCheck(piece.getTeamColor())){
                 validMoves.add(move);
             }
 
         }
 
         return validMoves;
-        //TODO: add in logic for check, castling, and en passant
     }
 
     /**
@@ -118,19 +125,18 @@ public class ChessGame {
             throw new InvalidMoveException("No piece found at this position");
         }
         if (piece.getTeamColor()!=this.turn){
-            throw new InvalidMoveException("Wrong turn");
+            throw new InvalidMoveException("Not your turn");
         }
         if (!validMoves(startPos).contains(move)){
-            throw new InvalidMoveException("Invalid move");
+            throw new InvalidMoveException("Not a valid move");
         }
         //else make the move
         board.addPiece(endPos, piece); //move
-        if(move.getPromotionPiece()!=null){
+        if(move.getPromotionPiece()!=null){//lets user check for promotion
             board.addPiece(endPos,new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
         }
-
         board.addPiece(startPos, null); //clear old
-        //TODO: add in logic for check, castling, and en passant
+
         //switch turns
         if (this.turn==TeamColor.WHITE){
             this.turn=TeamColor.BLACK;
@@ -138,9 +144,6 @@ public class ChessGame {
         else{
             this.turn=TeamColor.WHITE;
         }
-
-
-
     }
 
     /**
@@ -152,9 +155,10 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         //get position of king of given color
         var kingPos = findKing(teamColor);
-        if (kingPos==null){
+        if (kingPos==null){//if for some reason the board doesn't have a king
             return false;
         }
+        //simulates moves for all opponent's pieces
         for (int row=1;row<=8;row++){
             for (int col=1;col<=8;col++){
                 var pos = new ChessPosition(row, col);
