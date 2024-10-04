@@ -118,11 +118,17 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var startPos = move.getStartPosition();
         var endPos = move.getEndPosition();
+        var piece = board.getPiece(startPos);
+        if (piece == null){
+            throw new InvalidMoveException("No piece found at this position");
+        }
+        if (piece.getTeamColor()!=this.turn){
+            throw new InvalidMoveException("Wrong turn");
+        }
         if (!validMoves(startPos).contains(move)){
             throw new InvalidMoveException("Invalid move");
         }
         //else make the move
-        var piece = board.getPiece(startPos);
         board.addPiece(endPos, piece); //move
         if(move.getPromotionPiece()!=null){
             board.addPiece(endPos,new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
