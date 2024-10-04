@@ -85,6 +85,7 @@ public class ChessGame {
 
         for (var move: possibleMoves){
             ChessBoard simBoard= new ChessBoard(board);
+
             simBoard.addPiece(move.getEndPosition(), piece);
             simBoard.addPiece(startPosition, null);
 
@@ -92,15 +93,9 @@ public class ChessGame {
             ChessGame simGame = new ChessGame();
             simGame.setBoard(simBoard);
 
-            if(kingInCheck){//if king in check in game
-                if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
-                    validMoves.add(move);
-                }
-            }else{
-                //add in all moves that don't put the king in check
-                if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
-                    validMoves.add(move);
-                }
+            //and if the sim game doesn't have him in check
+            if (!simGame.isInCheck(piece.getTeamColor())){ //and if the sim game doesn't have him in check
+                validMoves.add(move);
             }
 
         }
@@ -227,14 +222,21 @@ public class ChessGame {
             for (int col=1;col<=8;col++){
                 ChessPosition pos = new ChessPosition(row,col);
                 ChessPiece piece= board.getPiece(pos);
+
                 if (piece != null && piece.getTeamColor()==teamColor){
                     //for move in moves, simulate, then see if the king is in check
                     Collection<ChessMove> possibleMoves = validMoves(pos);
+
                     for (var move: possibleMoves){
                         ChessBoard simBoard = new ChessBoard(board);
                         simBoard.addPiece(move.getEndPosition(), piece);//add move
                         simBoard.addPiece(pos,null);//clear old
-                        if (!isInCheck(teamColor)){
+
+                        //test the game simulation instead
+                        ChessGame simGame = new ChessGame();
+                        simGame.setBoard(simBoard);
+
+                        if (!simGame.isInCheck(teamColor)){
                             return false; //can make a move that gets doesn't result in check
                         }
                     }
