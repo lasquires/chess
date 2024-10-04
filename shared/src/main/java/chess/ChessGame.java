@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -74,9 +75,25 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var piece = board.getPiece(startPosition);
         if (piece == null || piece.getTeamColor() != this.turn){
-            return null;
+            return new ArrayList<>();
         }
-        return piece.pieceMoves(board, startPosition);
+        var possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (var move: possibleMoves){
+            ChessBoard simBoard= new ChessBoard(board);
+            simBoard.addPiece(move.getEndPosition(), piece);
+            simBoard.addPiece(startPosition, null);
+
+            //make game simulation--not just board, to check for color
+            ChessGame simGame = new ChessGame();
+            simGame.setBoard(simBoard);
+
+            if (!simGame.isInCheck(piece.getTeamColor())){
+                validMoves.add(move);
+            }
+        }
+
+        return validMoves;
         //TODO: add in logic for check, castling, and en passant
     }
 
@@ -95,6 +112,10 @@ public class ChessGame {
         //else make the move
         var piece = board.getPiece(startPos);
         board.addPiece(endPos, piece); //move
+        if(move.getPromotionPiece()!=null){
+            board.addPiece(endPos,new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
+        }
+
         board.addPiece(startPos, null); //clear old
         //TODO: add in logic for check, castling, and en passant
         //switch turns
@@ -118,12 +139,15 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         //get position of king of given color
         var kingPos = findKing(teamColor);
+        if (kingPos==null){
+            return false;
+        }
         for (int row=1;row<=8;row++){
             for (int col=1;col<=8;col++){
                 var pos = new ChessPosition(row, col);
                 var piece = board.getPiece(pos);
                 if (piece!=null && piece.getTeamColor()!=teamColor){
-                    Collection<ChessMove> possibleMoves = validMoves(pos);
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(board,pos);
                     for (var move: possibleMoves){
                         if (move.getEndPosition().equals(kingPos)){     //I hate how nested this is but oh well;
                             return true; //is in check;
@@ -146,7 +170,7 @@ public class ChessGame {
                 }
             }
         }
-        throw new IllegalStateException("King not found");
+        return null;
     }
 
     /**
@@ -158,7 +182,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if(isInCheck(teamColor)){
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
-            return simulateMoves(teamColor);
+            return simulateAllMoves(teamColor);
         }
         return false;
     }
@@ -175,12 +199,12 @@ public class ChessGame {
         if(!isInCheck(teamColor)){
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
             //will return if is in stalemate
-            return simulateMoves(teamColor);
+            return simulateAllMoves(teamColor);
         }
         return false;
     }
 
-    private boolean simulateMoves(TeamColor teamColor) {
+    private boolean simulateAllMoves(TeamColor teamColor) {
         for (int row=1;row<=8;row++){
             for (int col=1;col<=8;col++){
                 ChessPosition pos = new ChessPosition(row,col);
@@ -208,7 +232,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board.resetBoard();
+        this.board=board;
     }
 
     /**

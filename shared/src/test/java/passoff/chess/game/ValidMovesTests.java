@@ -110,6 +110,7 @@ public class ValidMovesTests {
 
         var validMoves = loadMoves(kingPosition, new int[][]{{6, 5}});
 
+
         assertMoves(game, validMoves, kingPosition);
 
         //make sure teams other pieces are not allowed to move
