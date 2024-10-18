@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+
 public class GameService {
-    private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
 
     public GameService(){
-        gameDAO = new MemoryGameDAO();
-        authDAO = new MemoryAuthDAO();
+        gameDAO = DataAccess.getGameDAO();
+        authDAO = DataAccess.getAuthDAO();
     }
 
     public List<GameData> listGames(String authToken) throws DataAccessException {

@@ -8,19 +8,19 @@ import java.util.UUID;
 
 
 public class UserService {
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
+
+    public UserService(){
+        userDAO = DataAccess.getUserDAO();
+        authDAO = DataAccess.getAuthDAO();
+    }
 
     public AuthData setAuthData(UserData userData) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         AuthData authData =  new AuthData(authToken, userData.username());
         authDAO.createAuth(authData);
         return authData;
-    }
-
-    public UserService(){
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
     }
 
     public AuthData register(UserData userData) throws DataAccessException {
