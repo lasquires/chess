@@ -12,7 +12,7 @@ public class UserService {
     private AuthDAO authDAO;
 
     public AuthData setAuthData(UserData userData) throws DataAccessException {
-        var authToken = UUID.randomUUID().toString();
+        String authToken = UUID.randomUUID().toString();
         AuthData authData =  new AuthData(authToken, userData.username());
         authDAO.createAuth(authData);
         return authData;
