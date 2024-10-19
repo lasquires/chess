@@ -13,7 +13,7 @@ import java.util.*;
 
 public class ListGameHandler implements Route {
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handle(Request request, Response response) throws DataAccessException {
         try{
             String authToken = request.headers("authorization");//new Gson().fromJson(request.body(), String.class);
             List<GameData> gameDataList = new GameService().listGames(authToken);

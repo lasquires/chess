@@ -28,7 +28,7 @@ public class GameService {
 
     public int createGame(String gameName, String authToken) throws DataAccessException{
         if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("Error: Invalid authToken");
+            throw new DataAccessException("unauthorized");
         }
         int gameID = gameDAO.findNextID();  //getNextID();//UUID.randomUUID().hashCode(); //TODO: see if this works?
         GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
@@ -36,12 +36,13 @@ public class GameService {
         return gameID;
     }
 
-    public void joinGame(int gameID, String username, String playerColor, String authToken) throws DataAccessException {
+    public void joinGame(int gameID, String playerColor, String authToken) throws DataAccessException {
         if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("Error: Invalid authToken");
+            throw new DataAccessException("unauthorized");
         }
+        String username = authDAO.getAuth(authToken).username();
         if(gameDAO.getGame(gameID)==null){
-            throw new DataAccessException("Error: Game not found");
+            throw new DataAccessException("bad request");
         }
         GameData gameData = gameDAO.getGame(gameID);
 
