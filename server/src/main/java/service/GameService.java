@@ -47,7 +47,7 @@ public class GameService {
         GameData gameData = gameDAO.getGame(gameID);
 
         if(Objects.equals(gameData.blackUsername(), username) || Objects.equals(gameData.whiteUsername(), username)){
-            throw new DataAccessException("Error: You are already part of this game");
+            throw new DataAccessException("you are already part of this game");
         }
         if (Objects.equals(playerColor, "BLACK") && gameData.blackUsername()==null){
             GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
@@ -57,8 +57,11 @@ public class GameService {
             GameData updatedGame = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(updatedGame);
         }
+        else if (Objects.equals(playerColor, "WHITE") || Objects.equals(playerColor, "BLACK")){
+            throw new DataAccessException("already taken");
+        }
         else{
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException(playerColor + " is not a valid color");
         }
     }
 

@@ -16,7 +16,7 @@ public class JoinGameHandler implements Route {
     public Object handle(Request request, Response response) throws DataAccessException {
         try{
             String authToken = request.headers("authorization");
-            Map<String, Object> requestMap = new Gson().fromJson(request.body(), HashMap.class);
+            HashMap requestMap = new Gson().fromJson(request.body(), HashMap.class);
             String playerColor = requestMap.get("playerColor").toString();
             Number gameID = (Number) requestMap.get("gameID");
             int gameIDInt = gameID.intValue();
