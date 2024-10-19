@@ -17,10 +17,12 @@ public class JoinGameHandler implements Route {
         try{
             String authToken = request.headers("authorization");
             HashMap requestMap = new Gson().fromJson(request.body(), HashMap.class);
-            String playerColor = requestMap.get("playerColor").toString();
+            Object playerColor = requestMap.get("playerColor");
             Number gameID = (Number) requestMap.get("gameID");
-            int gameIDInt = gameID.intValue();
-            new GameService().joinGame(gameIDInt, playerColor, authToken);
+            if (gameID==null || playerColor==null){
+                throw new DataAccessException("bad request");
+            }
+            new GameService().joinGame(gameID.intValue(), playerColor.toString(), authToken);
             response.status(200);
             return new Gson().toJson(new Object());
         }
