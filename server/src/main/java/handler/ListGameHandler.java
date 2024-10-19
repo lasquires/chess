@@ -35,18 +35,9 @@ public class ListGameHandler implements Route {
         for (GameData gameData: gameDataList){
             var gameInfo = new LinkedHashMap<>();
             gameInfo.put("gameID", gameData.gameID());
-            if (gameData.whiteUsername()==null){
-                gameInfo.put("whiteUsername", "");
-            }else{
-                gameInfo.put("whiteUsername", gameData.whiteUsername());
-            }
-            if (gameData.blackUsername()==null){
-                gameInfo.put("blackUsername", "");
-            }else{
-                gameInfo.put("blackUsername", gameData.blackUsername());
-            }
+            gameInfo.put("whiteUsername", gameData.whiteUsername());
+            gameInfo.put("blackUsername", gameData.blackUsername());
             gameInfo.put("gameName", gameData.gameName());
-
             gameList.add(gameInfo);
         }
         return gameList;
