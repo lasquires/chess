@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.*;
 import model.GameData;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class GameService {
         if(authDAO.getAuth(authToken)==null){
             throw new DataAccessException("Error: Invalid authToken");
         }
-        int gameID = UUID.randomUUID().hashCode(); //TODO: see if this works?
+        int gameID = gameDAO.findNextID();  //getNextID();//UUID.randomUUID().hashCode(); //TODO: see if this works?
         GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
         gameDAO.createGame(gameData);
         return gameID;

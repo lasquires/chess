@@ -2,10 +2,7 @@ package dataaccess;
 
 import model.GameData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
     private Map<Integer, GameData> games = new HashMap<>();
@@ -43,5 +40,13 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void clear() throws DataAccessException {
         games.clear();
+    }
+
+    @Override
+    public int findNextID(){
+        if (games.isEmpty()){
+            return 1; //first ID
+        }
+        return Collections.max((games.keySet()))+1;
     }
 }
