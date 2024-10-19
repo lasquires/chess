@@ -21,10 +21,7 @@ public class RegisterHandler implements Route {
             return  new Gson().toJson(authData);
         }
         catch(DataAccessException e){
-            return ErrorResponse.handleError(response,403,null);
-        }
-        catch(Exception e){
-            return ErrorResponse.handleError(response, 500, e.getMessage());
+            return ErrorResponse.handleError(response,e);
         }
 
     }

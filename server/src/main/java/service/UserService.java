@@ -39,7 +39,7 @@ public class UserService {
     public AuthData login(UserData userData) throws DataAccessException {
         if(userDAO.getUser(userData.username())==null){
 
-            throw new DataAccessException("\"Error: unauthorized\"");   //<--- like right here, I would want it to return 401
+            throw new DataAccessException("unauthorized");
         }
         if(!Objects.equals(userDAO.getUser(userData.username()).password(), userData.password())){
             throw new DataAccessException("Error: Incorrect password");
