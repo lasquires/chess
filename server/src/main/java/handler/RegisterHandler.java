@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 
 public class RegisterHandler implements Route {
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handle(Request request, Response response) throws DataAccessException {
 
         try{
             UserData userData = new Gson().fromJson(request.body(), UserData.class);

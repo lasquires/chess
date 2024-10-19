@@ -6,7 +6,6 @@ import spark.Response;
 public class ErrorResponse {
 
     public static String handleError(Response response, DataAccessException error){
-//        response.type("application/json");
 
         String errorMessage = error.getMessage();
 
@@ -15,11 +14,10 @@ public class ErrorResponse {
             case "unauthorized" -> 401;
             case "already taken" -> 403;
             default -> 500;
-//            case 400 ->  "{\"message\": \"Error: bad request\" }";
-//            case 401 -> "{\"message\": \"Error: unauthorized\" }";
-//            case 403 -> "{\"message\": \"Error: already taken\" }";
-//            default -> "{\"message\": \"Error: (" + customMessage+ ")\" }";
         };
+        if (responseCode==500){
+            errorMessage="("+errorMessage+")";
+        }
         response.status(responseCode);
         errorMessage = "{\"message\": \"Error: " + errorMessage+ "\" }";
         response.body(errorMessage);

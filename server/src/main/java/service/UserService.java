@@ -26,10 +26,10 @@ public class UserService {
     public AuthData register(UserData userData) throws DataAccessException {
 
         if(userData.username()==null|| userData.password()==null|| userData.email()==null) {
-            throw new DataAccessException("Error: you must provide a username, password, and email");
+            throw new DataAccessException("bad request");
         }
         if(userDAO!=null && userDAO.getUser(userData.username())!=null){
-            throw new DataAccessException("Error: username already taken");
+            throw new DataAccessException("already taken");
         }
         userDAO.createUser(userData);
 
@@ -38,17 +38,19 @@ public class UserService {
 
     public AuthData login(UserData userData) throws DataAccessException {
         if(userDAO.getUser(userData.username())==null){
-
             throw new DataAccessException("unauthorized");
         }
         if(!Objects.equals(userDAO.getUser(userData.username()).password(), userData.password())){
-            throw new DataAccessException("Error: Incorrect password");
+            throw new DataAccessException("unauthorized");
         }
         return setAuthData(userData);
     }
 
-    public void logout(AuthData authData) throws DataAccessException {
-        authDAO.deleteAuth(authData.authToken());
+    public void logout(String authToken) throws DataAccessException {
+        if (authDAO==null || authDAO.getAuth(authToken)==null){
+            throw new DataAccessException("unauthorized");
+        }
+        authDAO.deleteAuth(authToken);
     }
 
 }
