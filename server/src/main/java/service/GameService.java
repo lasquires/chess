@@ -21,7 +21,7 @@ public class GameService {
 
     public List<GameData> listGames(String authToken) throws DataAccessException {
         if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("Error: Invalid authToken");
+            throw new DataAccessException("unauthorized");
         }
         return gameDAO.listGames();
     }
