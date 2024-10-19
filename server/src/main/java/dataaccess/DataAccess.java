@@ -1,15 +1,9 @@
 package dataaccess;
 
 public class DataAccess {
-    private static UserDAO userDAO;
-    private static GameDAO gameDAO;
-    private static AuthDAO authDAO;
-
-    public DataAccess(){
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
-        authDAO = new MemoryAuthDAO();
-    }
+    private static UserDAO userDAO = new MemoryUserDAO();
+    private static GameDAO gameDAO = new MemoryGameDAO();;
+    private static AuthDAO authDAO = new MemoryAuthDAO();
 
 
     public static UserDAO getUserDAO() {

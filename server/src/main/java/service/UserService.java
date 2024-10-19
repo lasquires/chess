@@ -24,10 +24,11 @@ public class UserService {
     }
 
     public AuthData register(UserData userData) throws DataAccessException {
+
         if(userData.username()==null|| userData.password()==null|| userData.email()==null) {
             throw new DataAccessException("Error: you must provide a username, password, and email");
         }
-        if(userDAO.getUser(userData.username())!=null){
+        if(userDAO!=null && userDAO.getUser(userData.username())!=null){
             throw new DataAccessException("Error: username already taken");
         }
         userDAO.createUser(userData);
