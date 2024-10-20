@@ -17,12 +17,9 @@ public class ListGameHandler implements Route {
         try{
             String authToken = request.headers("authorization");//new Gson().fromJson(request.body(), String.class);
             List<GameData> gameDataList = new GameService().listGames(authToken);
-
             var gameList = formatOutput(gameDataList);
-
             var responseData = new LinkedHashMap<>();
             responseData.put("games", gameList);
-
             response.status(200);
             return new Gson().toJson(responseData);
         }catch(DataAccessException e){

@@ -33,4 +33,8 @@ public class MemoryAuthDAO implements AuthDAO {
     public void clear() throws DataAccessException {
         authTokens.clear();
     }
+    @Override
+    public int countActiveUsers(){
+        return authTokens.size();
+    }
 }

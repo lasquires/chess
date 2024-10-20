@@ -17,4 +17,10 @@ public class DataAccess {
     public static AuthDAO getAuthDAO() {
         return authDAO;
     }
+
+    public static void clearAll() throws DataAccessException {
+        userDAO.clear();
+        gameDAO.clear();
+        authDAO.clear();
+    }
 }
