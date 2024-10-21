@@ -16,7 +16,7 @@ public class UserService {
         this.authDAO = DataAccess.getAuthDAO();
     }
 
-    public AuthData setAuthData(UserData userData) throws DataAccessException {
+    private AuthData setAuthData(UserData userData) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         AuthData authData =  new AuthData(userData.username(), authToken);
         authDAO.createAuth(authData);

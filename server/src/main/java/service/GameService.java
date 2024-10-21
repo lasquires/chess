@@ -19,21 +19,21 @@ public class GameService {
         authDAO = DataAccess.getAuthDAO();
     }
 
-    public List<GameData> listGames(String authToken) throws DataAccessException {
-        if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("unauthorized");
-        }
-        return gameDAO.listGames();
-    }
-
     public int createGame(String gameName, String authToken) throws DataAccessException{
-        if(authDAO.getAuth(authToken)==null){
+        if(authToken == null || authDAO.getAuth(authToken)==null){
             throw new DataAccessException("unauthorized");
         }
         int gameID = gameDAO.findNextID();  //getNextID();//UUID.randomUUID().hashCode(); //TODO: see if this works?
         GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
         gameDAO.createGame(gameData);
         return gameID;
+    }
+
+    public List<GameData> listGames(String authToken) throws DataAccessException {
+        if(authDAO.getAuth(authToken)==null){
+            throw new DataAccessException("unauthorized");
+        }
+        return gameDAO.listGames();
     }
 
     public void joinGame(int gameID, String playerColor, String authToken) throws DataAccessException {
@@ -58,7 +58,7 @@ public class GameService {
             throw new DataAccessException("already taken");
         }
         else{
-            throw new DataAccessException(playerColor + " is not a valid color");
+            throw new DataAccessException(playerColor + " is not a valid color. Must be \"WHITE\" or \"BLACK\".");
         }
     }
 
