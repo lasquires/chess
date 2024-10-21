@@ -26,10 +26,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
         //move straight
         ChessPosition newPosition = myPosition.move(modifier,0);
-        if (board.IsEmpty(newPosition)){
-            CheckPromotions(myPosition, moves, promotionRow, newPosition);
+        if (board.isEmpty(newPosition)){
+            checkPromotions(myPosition, moves, promotionRow, newPosition);
             newPosition = myPosition.move(2*modifier,0);
-            if (board.IsEmpty(newPosition)&&
+            if (board.isEmpty(newPosition)&&
                     myPosition.getRow()==startRow){
                 moves.add(new ChessMove(myPosition, newPosition, null));
             }
@@ -37,14 +37,14 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
         //attack right
         newPosition = myPosition.move(modifier, modifier);
-        if (board.IsEnemy(myPosition, newPosition)){
-            CheckPromotions(myPosition, moves, promotionRow, newPosition);
+        if (board.isEnemy(myPosition, newPosition)){
+            checkPromotions(myPosition, moves, promotionRow, newPosition);
         }
 
         //attack left
         newPosition = myPosition.move(modifier, -1*modifier);
-        if (board.IsEnemy(myPosition, newPosition)){
-            CheckPromotions(myPosition, moves, promotionRow, newPosition);
+        if (board.isEnemy(myPosition, newPosition)){
+            checkPromotions(myPosition, moves, promotionRow, newPosition);
         }
 
 
@@ -53,7 +53,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 
-    private void CheckPromotions(ChessPosition myPosition, Collection<ChessMove> moves, int promotionRow, ChessPosition newPosition) {
+    private void checkPromotions(ChessPosition myPosition, Collection<ChessMove> moves, int promotionRow, ChessPosition newPosition) {
         if (newPosition.getRow()==promotionRow){
             moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
             moves.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));

@@ -15,6 +15,6 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                 {-1,-1},//left-down
                 {1,-1},//right-down
         };
-        return ChessUtils.CalculateLinearMoves(board, myPosition, directions);
+        return ChessUtils.calculateLinearMoves(board, myPosition, directions);
     }
 }

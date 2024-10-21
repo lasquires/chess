@@ -90,18 +90,18 @@ public class ChessBoard {
         squares[7][7]=new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
     }
 
-    public boolean IsOnBoard(ChessPosition newPosition) {
+    public boolean isOnBoard(ChessPosition newPosition) {
         int row = newPosition.getRow();
         int col = newPosition.getColumn();
         return row>=1 && row <=8 && col>=1 && col <=8;
     }
 
-    public boolean IsEmpty(ChessPosition newPosition) {
-        return IsOnBoard(newPosition)&&getPiece(newPosition)==null;
+    public boolean isEmpty(ChessPosition newPosition) {
+        return isOnBoard(newPosition)&&getPiece(newPosition)==null;
     }
 
-    public boolean IsEnemy(ChessPosition myPosition, ChessPosition newPosition) {
-        return IsOnBoard(newPosition)
+    public boolean isEnemy(ChessPosition myPosition, ChessPosition newPosition) {
+        return isOnBoard(newPosition)
                 && getPiece(newPosition)!=null
                 && getPiece(myPosition).getTeamColor()!=getPiece(newPosition).getTeamColor();
     }

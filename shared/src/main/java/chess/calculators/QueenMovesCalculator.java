@@ -20,6 +20,6 @@ public class QueenMovesCalculator implements PieceMovesCalculator {
 
 
         };
-        return ChessUtils.CalculateLinearMoves(board, myPosition, directions);
+        return ChessUtils.calculateLinearMoves(board, myPosition, directions);
     }
 }

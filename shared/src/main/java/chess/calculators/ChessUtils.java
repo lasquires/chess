@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessUtils {
-    public static Collection<ChessMove> CalculateLinearMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
+    public static Collection<ChessMove> calculateLinearMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         Collection<ChessMove> moves = new ArrayList<>();
 
         for (int[] direction: directions){
@@ -14,13 +14,13 @@ public class ChessUtils {
             while (true){
                 newPosition = newPosition.move(direction[0],direction[1]);
 
-                if(!board.IsOnBoard(newPosition)){
+                if(!board.isOnBoard(newPosition)){
                     break;//isn't on board.
                 }
-                if(board.IsEmpty(newPosition)){
+                if(board.isEmpty(newPosition)){
                     moves.add(new ChessMove(myPosition, newPosition, null));//addmove and continue;
                 }
-                else if (board.IsEnemy(myPosition, newPosition)){
+                else if (board.isEnemy(myPosition, newPosition)){
                     moves.add(new ChessMove(myPosition,newPosition,null));//addMove then break;
                     break;
                 } else{
@@ -37,13 +37,13 @@ public class ChessUtils {
         for (int[] direction: directions){
             ChessPosition newPosition = myPosition.move(direction[0],direction[1]);
 
-            if(!board.IsOnBoard(newPosition)){
+            if(!board.isOnBoard(newPosition)){
                 continue;//isn't on board.
             }
-            if(board.IsEmpty(newPosition)){
+            if(board.isEmpty(newPosition)){
                 moves.add(new ChessMove(myPosition, newPosition, null));//addmove and continue;
             }
-            else if (board.IsEnemy(myPosition, newPosition)){
+            else if (board.isEnemy(myPosition, newPosition)){
                 moves.add(new ChessMove(myPosition,newPosition,null));//addMove then break;
                 continue;
             } else{

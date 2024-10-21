@@ -15,6 +15,6 @@ public class RookMovesCalculator implements PieceMovesCalculator {
                 {-1,0},//left
                 {0,-1}//down
         };
-        return ChessUtils.CalculateLinearMoves(board, myPosition, directions);
+        return ChessUtils.calculateLinearMoves(board, myPosition, directions);
     }
 }

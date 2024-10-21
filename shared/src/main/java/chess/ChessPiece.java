@@ -25,7 +25,6 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
     private PieceMovesCalculator movesCalculator;
-    private int timesMoved = 0;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -45,14 +44,6 @@ public class ChessPiece {
         }
         return null;
 
-    }
-
-    public int getTimesMoved() {
-        return timesMoved;
-    }
-
-    public void increaseTimesMoved(int timesMoved) {
-        this.timesMoved++;
     }
 
 
