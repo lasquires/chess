@@ -36,4 +36,9 @@ public class ClearServiceTests {
         Assertions.assertTrue(DataAccess.getGameDAO().listGames().isEmpty(), "The game database was not cleared");
         Assertions.assertEquals(0, DataAccess.getAuthDAO().countActiveUsers(), "The authentication data was not cleared");
     }
+
+    @AfterAll
+    static void breakDown() throws DataAccessException{
+        new ClearService().clear();
+    }
 }

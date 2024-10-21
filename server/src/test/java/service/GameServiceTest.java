@@ -35,6 +35,10 @@ class GameServiceTest {
     }
 
 
+    @AfterAll
+    static void breakDown() throws DataAccessException{
+        new ClearService().clear();
+    }
 
     @Test
     @Order(1)
