@@ -8,5 +8,4 @@ public interface UserDAO {
     void clear() throws DataAccessException;
 
     int countUsers();
-    // TODO add more methods
 }

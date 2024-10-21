@@ -23,7 +23,7 @@ public class GameService {
         if(authToken == null || authDAO.getAuth(authToken)==null){
             throw new DataAccessException("unauthorized");
         }
-        int gameID = gameDAO.findNextID();  //getNextID();//UUID.randomUUID().hashCode(); //TODO: see if this works?
+        int gameID = gameDAO.findNextID();
         GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
         gameDAO.createGame(gameData);
         return gameID;

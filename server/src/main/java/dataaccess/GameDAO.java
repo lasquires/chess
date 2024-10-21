@@ -9,6 +9,5 @@ public interface GameDAO {
     List<GameData> listGames() throws DataAccessException;
     void updateGame(GameData game) throws DataAccessException;
     void clear() throws DataAccessException;
-    // TODO add more methods
     int findNextID();
 }

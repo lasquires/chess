@@ -9,5 +9,5 @@ public interface AuthDAO {
     void clear() throws DataAccessException;
 
     int countActiveUsers();
-    // TODO add more methods
+
 }
