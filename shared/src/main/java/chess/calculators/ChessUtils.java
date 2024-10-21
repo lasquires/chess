@@ -31,7 +31,7 @@ public class ChessUtils {
         return moves;
     }
 
-    public static Collection<ChessMove> CalculateSingleMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
+    public static Collection<ChessMove> calculateSingleMoves(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         Collection<ChessMove> moves = new ArrayList<>();
 
         for (int[] direction: directions){

@@ -19,6 +19,6 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
                 {1,-2},
                 {-1,-2}
         };
-        return ChessUtils.CalculateSingleMoves(board, myPosition, directions);
+        return ChessUtils.calculateSingleMoves(board, myPosition, directions);
     }
 }

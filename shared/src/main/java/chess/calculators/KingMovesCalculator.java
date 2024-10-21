@@ -21,6 +21,6 @@ public class KingMovesCalculator implements PieceMovesCalculator {
 
 
         };
-        return ChessUtils.CalculateSingleMoves(board, myPosition, directions);
+        return ChessUtils.calculateSingleMoves(board, myPosition, directions);
     }
 }
