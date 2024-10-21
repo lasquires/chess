@@ -24,8 +24,8 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(board, chessGame.board) && turn == chessGame.turn;
     }
@@ -163,7 +163,7 @@ public class ChessGame {
                 if (piece!=null && piece.getTeamColor()!=teamColor){
                     Collection<ChessMove> possibleMoves = piece.pieceMoves(board,pos);
                     for (var move: possibleMoves){
-                        if (move.getEndPosition().equals(kingPos)) return true; //is in check;
+                        if (move.getEndPosition().equals(kingPos)){return true;} //is in check;
                     }
                 }
             }
@@ -235,7 +235,7 @@ public class ChessGame {
                         ChessGame simGame = new ChessGame();
                         simGame.setBoard(simBoard);
 
-                        if (!simGame.isInCheck(teamColor)) return false; //can make a move that gets doesn't result in check
+                        if (!simGame.isInCheck(teamColor)){return false;} //can make a move that gets doesn't result in check
 
                     }
                 }
