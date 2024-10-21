@@ -84,9 +84,6 @@ public class ChessGame {
         //what it actually can do given the boardstate
         Collection<ChessMove> validMoves = new ArrayList<>();
 
-        //TODO: If king is not in check, and the piece in this position
-        // is a king or a rook, add castle to possibleMoves
-        //TODO: if can en passant, add to possibleMoves
 
         for (ChessMove move: possibleMoves){
             //get temporary boardState to manipulate
@@ -130,9 +127,6 @@ public class ChessGame {
             throw new InvalidMoveException("Not a valid move");
         }
 
-        //TODO: if the move is for castling, do that logic here
-        //TODO: if the move is for en passant, do that logic here
-
 
         board.addPiece(endPos, piece); //move
         if(move.getPromotionPiece()!=null){//lets user check for promotion
@@ -169,9 +163,7 @@ public class ChessGame {
                 if (piece!=null && piece.getTeamColor()!=teamColor){
                     Collection<ChessMove> possibleMoves = piece.pieceMoves(board,pos);
                     for (var move: possibleMoves){
-                        if (move.getEndPosition().equals(kingPos)){     //I hate how nested this is but oh well;
-                            return true; //is in check;
-                        }
+                        if (move.getEndPosition().equals(kingPos)) return true; //is in check;
                     }
                 }
             }
@@ -243,9 +235,8 @@ public class ChessGame {
                         ChessGame simGame = new ChessGame();
                         simGame.setBoard(simBoard);
 
-                        if (!simGame.isInCheck(teamColor)){
-                            return false; //can make a move that gets doesn't result in check
-                        }
+                        if (!simGame.isInCheck(teamColor)) return false; //can make a move that gets doesn't result in check
+
                     }
                 }
             }
