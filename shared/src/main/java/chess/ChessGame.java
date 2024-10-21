@@ -160,7 +160,7 @@ public class ChessGame {
             for (int col=1;col<=8;col++){
                 var pos = new ChessPosition(row, col);
                 var piece = board.getPiece(pos);
-                if (piece==null || (piece!=null && piece.getTeamColor()==teamColor)){
+                if (piece==null || piece.getTeamColor()==teamColor){
                     continue;
                 }
                 Collection<ChessMove> possibleMoves = piece.pieceMoves(board,pos);
@@ -225,7 +225,7 @@ public class ChessGame {
                 ChessPosition pos = new ChessPosition(row,col);
                 ChessPiece piece= board.getPiece(pos);
 
-                if (piece==null || (piece!=null && piece.getTeamColor()!=teamColor)){
+                if (piece==null || piece.getTeamColor()!=teamColor){
                     continue;
                 }
                 //for move in moves, simulate, then see if the king is in check
