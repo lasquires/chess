@@ -2,7 +2,6 @@ package dataaccess;
 
 import model.UserData;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class MySqlUserDAO implements UserDAO {
@@ -15,12 +14,12 @@ public class MySqlUserDAO implements UserDAO {
 
         try(var conn = DatabaseManager.getConnection()){
             String statement = "INSERT INTO UserData (username, password, email) VALUES (?,?,?)";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, user.username());
-                ps.setString(2, user.password());
-                ps.setString(3, user.email());
+            try (var userData = conn.prepareStatement(statement)) {
+                userData.setString(1, user.username());
+                userData.setString(2, user.password());
+                userData.setString(3, user.email());
 
-                ps.executeUpdate();
+                userData.executeUpdate();
             } catch (Exception e) {
                 throw new DataAccessException("Unable to add user");
             }
@@ -36,9 +35,9 @@ public class MySqlUserDAO implements UserDAO {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM UserData WHERE username=?";
 //            var statement = "SELECT id, json FROM pet WHERE id=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, username);
-                try (var rs = ps.executeQuery()) {
+            try (var userData = conn.prepareStatement(statement)) {
+                userData.setString(1, username);
+                try (var rs = userData.executeQuery()) {
                     if (rs.next()) {
                         String usernameResult = rs.getString("username");
                         String passwordResult = rs.getString("password");
@@ -47,7 +46,7 @@ public class MySqlUserDAO implements UserDAO {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
@@ -55,7 +54,14 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
-
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DELETE FROM UserData";
+            try (var action = conn.prepareStatement(statement)) {
+                action.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to clear users: " + e.getMessage());
+        }
     }
 
     @Override
@@ -63,3 +69,5 @@ public class MySqlUserDAO implements UserDAO {
         return 0;
     }
 }
+
+
