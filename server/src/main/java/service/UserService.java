@@ -11,7 +11,8 @@ public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
-    public UserService(){
+    public UserService() throws DataAccessException {
+        DataAccess dataAccess = new DataAccess();
         this.userDAO = DataAccess.getUserDAO();
         this.authDAO = DataAccess.getAuthDAO();
     }

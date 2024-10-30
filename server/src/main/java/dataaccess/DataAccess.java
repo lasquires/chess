@@ -1,5 +1,6 @@
 package dataaccess;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DataAccess {
@@ -20,14 +21,16 @@ public class DataAccess {
 //        return authDAO;
 //    }
 
-
-    private static UserDAO userDAO = new MySqlUserDAO();
-    private static GameDAO gameDAO = new MySqlGameDAO();
-    private static AuthDAO authDAO = new MySqlAuthDAO();
+    private static UserDAO userDAO;
+    private static GameDAO gameDAO;
+    private static AuthDAO authDAO;
 
 
     public DataAccess() throws DataAccessException{
         configureDatabase();
+        userDAO = new MySqlUserDAO();
+        gameDAO = new MySqlGameDAO();
+        authDAO = new MySqlAuthDAO();
     }
 
     public static UserDAO getUserDAO() {
@@ -49,8 +52,7 @@ public class DataAccess {
               `username` VARCHAR(256) NOT NULL,
               `password` VARCHAR(256) NOT NULL,
               `email` VARCHAR(256) NOT NULL,
-              PRIMARY KEY (`username`),
-              --INDEX (`email`)
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
