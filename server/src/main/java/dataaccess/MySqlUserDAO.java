@@ -14,12 +14,12 @@ public class MySqlUserDAO implements UserDAO {
 
         try(var conn = DatabaseManager.getConnection()){
             String statement = "INSERT INTO UserData (username, password, email) VALUES (?,?,?)";
-            try (var userData = conn.prepareStatement(statement)) {
-                userData.setString(1, user.username());
-                userData.setString(2, user.password());
-                userData.setString(3, user.email());
+            try (var request = conn.prepareStatement(statement)) {
+                request.setString(1, user.username());
+                request.setString(2, user.password());
+                request.setString(3, user.email());
 
-                userData.executeUpdate();
+                request.executeUpdate();
             } catch (Exception e) {
                 throw new DataAccessException("Unable to add user");
             }
@@ -35,13 +35,13 @@ public class MySqlUserDAO implements UserDAO {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM UserData WHERE username=?";
 //            var statement = "SELECT id, json FROM pet WHERE id=?";
-            try (var userData = conn.prepareStatement(statement)) {
-                userData.setString(1, username);
-                try (var rs = userData.executeQuery()) {
-                    if (rs.next()) {
-                        String usernameResult = rs.getString("username");
-                        String passwordResult = rs.getString("password");
-                        String emailResult = rs.getString("email");
+            try (var query = conn.prepareStatement(statement)) {
+                query.setString(1, username);
+                try (var userData = query.executeQuery()) {
+                    if (userData.next()) {
+                        String usernameResult = userData.getString("username");
+                        String passwordResult = userData.getString("password");
+                        String emailResult = userData.getString("email");
                         return new UserData(usernameResult,passwordResult, emailResult);
                     }
                 }
@@ -56,8 +56,8 @@ public class MySqlUserDAO implements UserDAO {
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "DELETE FROM UserData";
-            try (var action = conn.prepareStatement(statement)) {
-                action.executeUpdate();
+            try (var request = conn.prepareStatement(statement)) {
+                request.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DataAccessException("Unable to clear users: " + e.getMessage());
