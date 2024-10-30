@@ -44,7 +44,7 @@ public class DataAccess {
               `whiteUsername` VARCHAR(256),
               `blackUsername` VARCHAR(256),
               `gameName` VARCHAR(256),
-              `game` BLOB,
+              `game` JSON,
               PRIMARY KEY (`gameID`),
               FOREIGN KEY (`whiteUsername`) REFERENCES UserData(`username`),
               FOREIGN KEY (`blackUsername`) REFERENCES UserData(`username`)

@@ -12,9 +12,11 @@ public class GameService {
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
-    public GameService(){
-        gameDAO = DataAccess.getGameDAO();
-        authDAO = DataAccess.getAuthDAO();
+    public GameService() throws DataAccessException {
+        DataAccess dataAccess = new DataAccess(); //added
+
+        gameDAO = dataAccess.getGameDAO();
+        authDAO = dataAccess.getAuthDAO();
     }
 
     public int createGame(String gameName, String authToken) throws DataAccessException{

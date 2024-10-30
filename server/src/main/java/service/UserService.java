@@ -13,8 +13,8 @@ public class UserService {
 
     public UserService() throws DataAccessException {
         DataAccess dataAccess = new DataAccess(); //added
-        this.userDAO = DataAccess.getUserDAO();
-        this.authDAO = DataAccess.getAuthDAO();
+        this.userDAO = dataAccess.getUserDAO();
+        this.authDAO = dataAccess.getAuthDAO();
     }
 
     private AuthData setAuthData(UserData userData) throws DataAccessException {

@@ -4,8 +4,9 @@ import dataaccess.*;
 
 public class ClearService {
     public void clear() throws DataAccessException{
-        DataAccess.getAuthDAO().clear();
-        DataAccess.getGameDAO().clear();
-        DataAccess.getUserDAO().clear();
+        DataAccess dataAccess = new DataAccess(); //added
+        dataAccess.getAuthDAO().clear();
+        dataAccess.getGameDAO().clear();
+        dataAccess.getUserDAO().clear();
     }
 }
