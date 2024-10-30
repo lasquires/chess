@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySqlGameDAO implements GameDAO {
@@ -59,7 +60,27 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public List<GameData> listGames() throws DataAccessException {
-        return List.of();
+        List<GameData> gameDataList = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM GameData";
+            try (var query = conn.prepareStatement(statement)) {
+                try (var response = query.executeQuery()) {
+                    while (response.next()) {
+                        int gameIDResult = response.getInt("gameID");
+                        String whiteUsername = response.getString("whiteUsername");
+                        String blackUsername = response.getString("blackUsername");
+                        String gameName = response.getString("gameName");
+                        String gameJson = response.getString("game");
+                        //TODO: figure out how to deserialize
+//                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+                        gameDataList.add(new GameData(gameIDResult,whiteUsername, blackUsername, gameName, new ChessGame()));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return gameDataList;
     }
 
     @Override
