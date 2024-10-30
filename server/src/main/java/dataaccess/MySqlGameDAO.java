@@ -3,7 +3,6 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -104,7 +103,20 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     @Override
-    public int findNextID() {
-        return 0;
+    public int findNextID() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String query = "SELECT MAX(gameID) FROM GameData";
+            try (var request = conn.prepareStatement(query)) {
+                var result = request.executeQuery();
+                if (result.next()){
+                    return result.getInt(1)+1;
+                }
+                else{
+                    return 1;
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException("Unable to clear users: " + e.getMessage());
+        }
     }
 }
