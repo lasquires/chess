@@ -24,15 +24,15 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private PieceMovesCalculator movesCalculator;
+    private transient PieceMovesCalculator movesCalculator;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        this.movesCalculator = getCalculator(type);
+        this.movesCalculator = getCalculator();
     }
 
-    private PieceMovesCalculator getCalculator(PieceType type) {
+    private PieceMovesCalculator getCalculator() {
         switch(type){
             case KING -> {return new KingMovesCalculator();}
             case QUEEN ->{return new QueenMovesCalculator();}
@@ -40,9 +40,9 @@ public class ChessPiece {
             case KNIGHT -> {return new KnightMovesCalculator();}
             case ROOK -> {return new RookMovesCalculator();}
             case PAWN -> {return new PawnMovesCalculator();}
-            default -> new IllegalArgumentException("Invalid piece type");
+            default -> throw new IllegalArgumentException("Invalid piece type");
         }
-        return null;
+//        return null;
 
     }
 
