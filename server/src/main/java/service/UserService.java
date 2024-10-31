@@ -2,8 +2,8 @@ package service;
 
 import model.*;
 import dataaccess.*;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.UUID;
 
 
@@ -32,19 +32,26 @@ public class UserService {
         if(userDAO!=null && userDAO.getUser(userData.username())!=null){
             throw new DataAccessException("already taken");
         }
-        userDAO.createUser(userData);
 
-        return setAuthData(userData);
+        UserData hashedUserData = new UserData(userData.username(),
+                BCrypt.hashpw(userData.password(), BCrypt.gensalt()),
+                userData.email());
+
+        userDAO.createUser(hashedUserData);
+
+        return setAuthData(hashedUserData);
     }
 
     public AuthData login(UserData userData) throws DataAccessException {
-        if(userDAO.getUser(userData.username())==null){
+        UserData userInDB = userDAO.getUser(userData.username());
+        if(userInDB ==null){
             throw new DataAccessException("unauthorized");
         }
-        if(!Objects.equals(userDAO.getUser(userData.username()).password(), userData.password())){
+
+        if(!BCrypt.checkpw(userData.password(), userInDB.password())){
             throw new DataAccessException("unauthorized");
         }
-        return setAuthData(userData);
+        return setAuthData(userInDB);
     }
 
     public void logout(String authToken) throws DataAccessException {
