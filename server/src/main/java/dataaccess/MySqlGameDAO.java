@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +26,14 @@ public class MySqlGameDAO implements GameDAO {
                 query.setInt(1, gameID);
                 try (var response = query.executeQuery()) {
                     if (response.next()) {
-                        int gameIDResult = response.getInt("gameID");
-                        String whiteUsername = response.getString("whiteUsername");
-                        String blackUsername = response.getString("blackUsername");
-                        String gameName = response.getString("gameName");
-                        String gameJson = response.getString("game");
-                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
-                        //TODO: figure out how to deserialize
-                        return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game);
+//                        int gameIDResult = response.getInt("gameID");
+//                        String whiteUsername = response.getString("whiteUsername");
+//                        String blackUsername = response.getString("blackUsername");
+//                        String gameName = response.getString("gameName");
+//                        String gameJson = response.getString("game");
+//                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+//                        return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game);
+                        return deserialize(response);
                     }
                 }
             }
@@ -50,14 +51,15 @@ public class MySqlGameDAO implements GameDAO {
             try (var query = conn.prepareStatement(statement)) {
                 try (var response = query.executeQuery()) {
                     while (response.next()) {
-                        int gameIDResult = response.getInt("gameID");
-                        String whiteUsername = response.getString("whiteUsername");
-                        String blackUsername = response.getString("blackUsername");
-                        String gameName = response.getString("gameName");
-                        String gameJson = response.getString("game");
-                        //TODO: figure out how to deserialize
-                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
-                        gameDataList.add(new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game));
+//                        int gameIDResult = response.getInt("gameID");
+//                        String whiteUsername = response.getString("whiteUsername");
+//                        String blackUsername = response.getString("blackUsername");
+//                        String gameName = response.getString("gameName");
+//                        String gameJson = response.getString("game");
+//                        //TODO: figure out how to deserialize
+//                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+//                        gameDataList.add(new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game));
+                            gameDataList.add(deserialize(response));
                     }
                 }
             }
@@ -124,4 +126,16 @@ public class MySqlGameDAO implements GameDAO {
             throw new DataAccessException("Unable to clear users: " + e.getMessage());
         }
     }
+
+    private GameData deserialize(ResultSet response) throws SQLException {
+        int gameIDResult = response.getInt("gameID");
+        String whiteUsername = response.getString("whiteUsername");
+        String blackUsername = response.getString("blackUsername");
+        String gameName = response.getString("gameName");
+        String gameJson = response.getString("game");
+        //TODO: figure out how to deserialize
+        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+        return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game);
+    }
+
 }
