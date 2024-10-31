@@ -15,22 +15,6 @@ public class MySqlGameDAO implements GameDAO {
             throw new DataAccessException("Game with this ID already exists");
         }
         updateGame(game);
-//        try(var conn = DatabaseManager.getConnection()){
-//            String statement = "INSERT INTO GameData (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?,?,?,?,?)";
-//            try (var request = conn.prepareStatement(statement)) {
-//                request.setInt(1, game.gameID());
-//                request.setString(2, game.whiteUsername());
-//                request.setString(3, game.blackUsername());
-//                request.setString(4, game.gameName());
-//                request.setString(5, new Gson().toJson(new ChessGame(), ChessGame.class));
-//
-//                request.executeUpdate();
-//            } catch (Exception e) {
-//                throw new DataAccessException("Unable to add game");
-//            }
-//        } catch (Exception e) {
-//            throw new DataAccessException("Unable to connect to database");
-//        }
     }
 
     @Override
@@ -46,9 +30,9 @@ public class MySqlGameDAO implements GameDAO {
                         String blackUsername = response.getString("blackUsername");
                         String gameName = response.getString("gameName");
                         String gameJson = response.getString("game");
-//                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
                         //TODO: figure out how to deserialize
-                        return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, new ChessGame());
+                        return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game);
                     }
                 }
             }
@@ -72,8 +56,8 @@ public class MySqlGameDAO implements GameDAO {
                         String gameName = response.getString("gameName");
                         String gameJson = response.getString("game");
                         //TODO: figure out how to deserialize
-//                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
-                        gameDataList.add(new GameData(gameIDResult,whiteUsername, blackUsername, gameName, new ChessGame()));
+                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+                        gameDataList.add(new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game));
                     }
                 }
             }
@@ -100,7 +84,7 @@ public class MySqlGameDAO implements GameDAO {
                 request.setString(2, game.whiteUsername());
                 request.setString(3, game.blackUsername());
                 request.setString(4, game.gameName());
-                request.setString(5, new Gson().toJson(new ChessGame(), ChessGame.class));
+                request.setString(5, new Gson().toJson(game.game(), ChessGame.class));
 
                 request.executeUpdate();
             } catch (Exception e) {

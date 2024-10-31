@@ -44,7 +44,7 @@ public class UserService {
 
     public AuthData login(UserData userData) throws DataAccessException {
         UserData userInDB = userDAO.getUser(userData.username());
-        if(userInDB ==null){
+        if(userInDB == null){
             throw new DataAccessException("unauthorized");
         }
 
