@@ -64,10 +64,7 @@ public class MySqlUserDAO implements UserDAO {
         }
     }
 
-    @Override
-    public int countUsers() {
-        return 0;
-    }
+
 }
 
 
