@@ -45,11 +45,7 @@ class MySqlGameDAOTest {
 
     @Test
     void getGameValidID() throws DataAccessException {
-        int gameID = 1;
-        GameData newGame = new GameData(gameID, null, null, "newGame", new ChessGame());
-        gameDAO.createGame(newGame);
-        GameData gameGotten = gameDAO.getGame(gameID);
-        assertNotNull(gameGotten, "Error in retreiving the game");
+        createGameNewID();
     }
     @Test
     void getGameInvalidID() throws DataAccessException {

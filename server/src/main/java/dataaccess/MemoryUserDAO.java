@@ -29,7 +29,4 @@ public class MemoryUserDAO implements UserDAO {
     }
 
 
-    public int countUsers(){
-        return users.values().size();
-    }
 }
