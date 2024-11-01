@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,9 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class MySqlUserDAOTest {
 
     private UserDAO userDAO;
+
+
     @BeforeEach
     void setUp() throws DataAccessException {
         DataAccess dataAccess = new DataAccess();
+        dataAccess.getAuthDAO().clear();
+        dataAccess.getUserDAO().clear();
         userDAO = dataAccess.getUserDAO();
     }
 
