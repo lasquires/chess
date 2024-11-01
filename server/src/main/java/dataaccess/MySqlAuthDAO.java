@@ -24,7 +24,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 throw new DataAccessException("Unable to add authToken");
             }
         } catch (Exception e) {
-            throw new DataAccessException("Unable to connect to database");
+            throw new DataAccessException(e.getMessage());
         }
     }
 
