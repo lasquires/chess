@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class DataAccess {
     private UserDAO userDAO; //= new MemoryUserDAO();
     private GameDAO gameDAO; //= new MemoryGameDAO();
-    private AuthDAO authDAO; //= new MemoryAuthDAO();
+    private AuthDAO authDAO; ////= new MemoryAuthDAO();
 
 
     public DataAccess() throws DataAccessException{
