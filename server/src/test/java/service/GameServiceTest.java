@@ -24,10 +24,11 @@ class GameServiceTest {
 
     @BeforeAll
     static void setUp() throws DataAccessException{
+        DataAccess dataAccess = new DataAccess();
         userService = new UserService();
         gameService = new GameService();
-        gameDAO = DataAccess.getGameDAO();
-        authDAO = DataAccess.getAuthDAO();
+        gameDAO = dataAccess.getGameDAO();
+        authDAO = dataAccess.getAuthDAO();
         userData = new UserData("bob", "password", "bob@gmail.com");
         authData = userService.register(userData);
 

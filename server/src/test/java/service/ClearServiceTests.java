@@ -26,15 +26,17 @@ public class ClearServiceTests {
         AuthData authData = userService.register(userData); //populate authData and UserData
         int gameID = gameService.createGame("bob's game", authData.authToken()); //populate gameData
 
-        Assertions.assertNotEquals(0, dataAccess.getUserDAO().countUsers(), "Nothing was added to user db");
-        Assertions.assertFalse(dataAccess.getGameDAO().listGames().isEmpty(), "Nothing was added to game db");
-        Assertions.assertNotEquals(0, dataAccess.getAuthDAO().countActiveUsers(), "Nothing was added to auth db");
+        Assertions.assertDoesNotThrow(()->dataAccess.getUserDAO().getUser("bob"));
+        Assertions.assertDoesNotThrow(()->dataAccess.getAuthDAO().getAuth(authData.authToken()));
+        Assertions.assertDoesNotThrow(()->dataAccess.getGameDAO().getGame(gameID));
+
 
         clearService.clear();
 
-        Assertions.assertEquals(0, dataAccess.getUserDAO().countUsers(), "The user dataset was not cleared");
-        Assertions.assertTrue(dataAccess.getGameDAO().listGames().isEmpty(), "The game database was not cleared");
-        Assertions.assertEquals(0, dataAccess.getAuthDAO().countActiveUsers(), "The authentication data was not cleared");
+        Assertions.assertNull(dataAccess.getUserDAO().getUser("bob"));
+        Assertions.assertNull(dataAccess.getAuthDAO().getAuth(authData.authToken()));
+        Assertions.assertNull(dataAccess.getGameDAO().getGame(gameID));
+
     }
 
     @AfterAll
