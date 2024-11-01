@@ -19,7 +19,6 @@ class MySqlGameDAOTest {
     void setUp() throws DataAccessException {
         DataAccess dataAccess = new DataAccess();
         gameDAO = dataAccess.getGameDAO();
-
     }
 
     @AfterEach
