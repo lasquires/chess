@@ -74,8 +74,4 @@ public class MySqlAuthDAO implements AuthDAO{
         }
     }
 
-    @Override
-    public int countActiveUsers() {
-        return 0;
-    }
 }
