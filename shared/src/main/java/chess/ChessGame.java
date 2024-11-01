@@ -116,7 +116,8 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var startPos = move.getStartPosition();
         var endPos = move.getEndPosition();
-        var piece = board.getPiece(startPos);
+        ChessPiece piece = board.getPiece(startPos);
+
         if (piece == null){
             throw new InvalidMoveException("No piece found at this position");
         }
@@ -266,4 +267,5 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return this.board;
     }
+
 }

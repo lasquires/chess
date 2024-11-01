@@ -46,7 +46,9 @@ public class ChessPiece {
 
     }
 
-
+    public void setMovesCalculator(){
+        this.movesCalculator = getCalculator();
+    }
     /**
      * The various different chess piece options
      */

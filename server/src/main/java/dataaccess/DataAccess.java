@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DataAccess {
-    private static UserDAO userDAO; //= new MemoryUserDAO();
-    private static GameDAO gameDAO; //= new MemoryGameDAO();
-    private static AuthDAO authDAO; //= new MemoryAuthDAO();
+    private UserDAO userDAO; //= new MemoryUserDAO();
+    private GameDAO gameDAO; //= new MemoryGameDAO();
+    private AuthDAO authDAO; //= new MemoryAuthDAO();
 
 
     public DataAccess() throws DataAccessException{
@@ -16,15 +16,15 @@ public class DataAccess {
         authDAO = new MySqlAuthDAO();
     }
 
-    public static UserDAO getUserDAO() {
+    public UserDAO getUserDAO() {
         return userDAO;
     }
 
-    public static GameDAO getGameDAO() {
+    public GameDAO getGameDAO() {
         return gameDAO;
     }
 
-    public static AuthDAO getAuthDAO() {
+    public AuthDAO getAuthDAO() {
         return authDAO;
     }
 

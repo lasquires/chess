@@ -1,6 +1,9 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
 
@@ -15,7 +18,7 @@ public class MySqlGameDAO implements GameDAO {
         if(getGame(game.gameID())!=null){
             throw new DataAccessException("Game with this ID already exists");
         }
-        updateGame(game);
+        updateGameData(game);
     }
 
     @Override
@@ -56,6 +59,13 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
+        if (getGame(game.gameID())==null){
+            throw new DataAccessException("Game with this ID not found");
+        }
+        updateGameData(game);
+    }
+
+    private static void updateGameData(GameData game) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
             String statement = """
             INSERT INTO GameData (gameID, whiteUsername, blackUsername, gameName, game)
@@ -119,7 +129,20 @@ public class MySqlGameDAO implements GameDAO {
         String gameName = response.getString("gameName");
         String gameJson = response.getString("game");
         ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+        initializePieces(game);
         return new GameData(gameIDResult,whiteUsername, blackUsername, gameName, game);
+    }
+
+    private void initializePieces(ChessGame game){
+        for (int row = 1; row <= 8; row++){
+            for (int col = 1; col <= 8; col++){
+                ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
+                if (piece!=null){
+                    piece.setMovesCalculator();
+                }
+            }
+        }
+
     }
 
 }
