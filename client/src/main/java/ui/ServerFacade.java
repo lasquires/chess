@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.io.IOException;
@@ -41,7 +42,12 @@ public class ServerFacade {
         System.out.println("Logged out successfully.");
     }
 
+    public void createGame(String gameName, String authToken) throws ResponseException {
+        String path = "/game";
+        GameData request = new GameData(0,null, null, gameName, null);
+        this.makeRequest("POST", path, request, null, authToken);
 
+    }
 
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

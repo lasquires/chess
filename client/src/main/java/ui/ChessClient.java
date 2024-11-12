@@ -2,6 +2,7 @@ package ui;
 
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 
 import java.util.Arrays;
 
@@ -30,7 +31,7 @@ public class ChessClient {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "logout" -> logout();
-//                case "create" -> createGame(params);
+                case "create" -> createGame(params);
 //                case "list" -> listGames();
 //                case "play" -> playGame(params);
 //                case "observe" -> observeGame(params);
@@ -61,6 +62,7 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
+
     private String login(String... params) throws ResponseException {
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 params, "+ params.length + " given.");
@@ -84,6 +86,21 @@ public class ChessClient {
         authToken = null;
         return "logged out.";
 
+    }
+
+    private String createGame(String... params) throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "Must be logged in to create a game");
+        }
+        String gameName = params[0];
+        try{
+            server.createGame(gameName, authToken);
+            //TODO: fix following line
+            return "Successfully created.";
+
+        }catch(ResponseException e){
+            return "Error: " + e.getMessage();
+        }
     }
 
     public String help(){
