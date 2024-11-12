@@ -5,6 +5,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ChessClient {
     private String visitorName = null;
@@ -32,7 +33,7 @@ public class ChessClient {
                 case "login" -> login(params);
                 case "logout" -> logout();
                 case "create" -> createGame(params);
-//                case "list" -> listGames();
+                case "list" -> listGames();
 //                case "play" -> playGame(params);
 //                case "observe" -> observeGame(params);
                 default -> help();
@@ -42,6 +43,18 @@ public class ChessClient {
 //        }
 
 
+    }
+
+    private String listGames() throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "You are not signed in.");
+        }
+        try{
+            String gameList = server.listGames(authToken);
+            return gameList;
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String register(String... params) throws ResponseException {
@@ -62,7 +75,6 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
-
     private String login(String... params) throws ResponseException {
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 params, "+ params.length + " given.");
@@ -87,7 +99,6 @@ public class ChessClient {
         return "logged out.";
 
     }
-
     private String createGame(String... params) throws ResponseException {
         if (authToken == null){
             throw new ResponseException(400, "Must be logged in to create a game");

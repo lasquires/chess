@@ -1,6 +1,9 @@
 package ui;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -10,9 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -48,7 +55,39 @@ public class ServerFacade {
         this.makeRequest("POST", path, request, null, authToken);
 
     }
+    public String listGames(String authToken) throws ResponseException {
+        String path = "/game";
+        Object jsonObject = this.makeRequest("GET", path, null, Object.class, authToken);
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(jsonObject);
 
+
+        Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+
+
+        Map<String, Object> map = gson.fromJson(jsonString, mapType);
+
+        List<LinkedTreeMap<String, Object>> gamesList = (List<LinkedTreeMap<String, Object>>) map.get("games");
+        String outString = "";
+        int index = 1;
+        for (var game : gamesList){
+//            System.out.println(game.keySet());
+//            System.out.println(game.values());
+            var gameName = game.get("gameName");
+            String whiteUsername = "empty";
+            String blackUsername = "empty";
+            if (game.containsKey("whiteUsername")){
+                whiteUsername = game.get("whiteUsername").toString();
+            }
+            if (game.containsKey("blackUsername")){
+                whiteUsername = game.get("blackUsername").toString();
+            }
+            outString += String.format("%d.\tGame name: %s \tWhite: %s\tBlack: %s\n", index, gameName, whiteUsername, blackUsername);
+            System.out.println(outString);
+            index++;
+        }
+        return outString;
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
