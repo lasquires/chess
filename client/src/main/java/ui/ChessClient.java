@@ -11,7 +11,7 @@ public class ChessClient {
     private static boolean isLoggedIn = false;
     private final String serverUrl;
     private String authToken = null;
-    private State state = State.SIGNEDOUT;
+//    private State state = State.SIGNEDOUT;
 
 
     public ChessClient(String serverUrl) {
@@ -29,7 +29,7 @@ public class ChessClient {
                 case "quit" -> "quit";
                 case "register" -> register(params);
                 case "login" -> login(params);
-//                case "logout" -> logout();
+                case "logout" -> logout();
 //                case "create" -> createGame(params);
 //                case "list" -> listGames();
 //                case "play" -> playGame(params);
@@ -44,6 +44,7 @@ public class ChessClient {
     }
 
     private String register(String... params) throws ResponseException {
+
         if (params.length != 3){
             throw new ResponseException(400, "Expected 3 params, "+ params.length + " given.");
         }
@@ -54,7 +55,7 @@ public class ChessClient {
         try {
             AuthData authData = server.register(username, password, email);
             authToken = authData.authToken();
-            state = State.SIGNEDIN;
+//            state = State.SIGNEDIN;
             return "Successfully registered.";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
@@ -69,16 +70,24 @@ public class ChessClient {
         try {
             AuthData authData = server.login(username, password);
             authToken = authData.authToken();
-            state = State.SIGNEDIN;
-            return "Successfully registered.";
+//            state = State.SIGNEDIN;
+            return "Successfully logged in.";
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
         }
     }
+    private String logout() throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "You are not signed in.");
+        }
+        server.logout(authToken);
+        authToken = null;
+        return "logged out.";
 
+    }
 
     public String help(){
-        if (state == State.SIGNEDIN){
+        if (authToken != null){
             System.out.println("Options:");
             System.out.println("List current games: \"l\", \"list\"");
             System.out.println("Create a new game: \"c\", \"create\" <GAME NAME>");

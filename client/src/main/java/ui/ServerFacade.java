@@ -25,28 +25,35 @@ public class ServerFacade {
         String path = "/user";
         UserData request = new UserData(username, password, email);
         System.out.println(request.toString());
-        return this.makeRequest("POST", path, request, AuthData.class);
+        return this.makeRequest("POST", path, request, AuthData.class, null);
 
     }
 
     public AuthData login(String username, String password) throws ResponseException {
         String path = "/session";
         UserData request = new UserData(username, password, null);
-        return this.makeRequest("POST", path, request, AuthData.class);
+        return this.makeRequest("POST", path, request, AuthData.class, null);
+    }
+
+    public void logout(String authToken) throws ResponseException {
+        String path = "/session";
+        this.makeRequest("DELETE", path, null, null, authToken);
+        System.out.println("Logged out successfully.");
     }
 
 
 
 
-
-
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            if (authToken != null){
+                http.setRequestProperty("authorization", authToken);
+            }
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
