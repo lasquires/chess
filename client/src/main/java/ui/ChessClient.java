@@ -28,7 +28,7 @@ public class ChessClient {
             return switch (cmd) {
                 case "quit" -> "quit";
                 case "register" -> register(params);
-//                case "login" -> login(params);
+                case "login" -> login(params);
 //                case "logout" -> logout();
 //                case "create" -> createGame(params);
 //                case "list" -> listGames();
@@ -44,7 +44,7 @@ public class ChessClient {
     }
 
     private String register(String... params) throws ResponseException {
-        if (params.length < 3){
+        if (params.length != 3){
             throw new ResponseException(400, "Expected 3 params, "+ params.length + " given.");
         }
 
@@ -60,15 +60,39 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
-
+    private String login(String... params) throws ResponseException {
+        if (params.length != 2){
+            throw new ResponseException(400, "Expected 2 params, "+ params.length + " given.");
+        }
+        String username = params[0];
+        String password = params[1];
+        try {
+            AuthData authData = server.login(username, password);
+            authToken = authData.authToken();
+            state = State.SIGNEDIN;
+            return "Successfully registered.";
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
+        }
+    }
 
 
     public String help(){
-        System.out.println("Options:");
-        System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
-        System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
-        System.out.println("Exit the program: \"q\", \"quit\"");
-        System.out.println("Print this message: \"h\", \"help\"");
+        if (state == State.SIGNEDIN){
+            System.out.println("Options:");
+            System.out.println("List current games: \"l\", \"list\"");
+            System.out.println("Create a new game: \"c\", \"create\" <GAME NAME>");
+            System.out.println("Join a game: \"j\", \"join\" <GAME ID> <COLOR>");
+            System.out.println("Watch a game: \"w\", \"watch\" <GAME ID>");
+            System.out.println("Logout: \"logout\"");
+        }
+        else {
+            System.out.println("Options:");
+            System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
+            System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
+            System.out.println("Exit the program: \"q\", \"quit\"");
+            System.out.println("Print this message: \"h\", \"help\"");
+        }
         return "";
     }
 }

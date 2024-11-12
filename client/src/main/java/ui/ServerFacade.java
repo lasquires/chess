@@ -24,6 +24,7 @@ public class ServerFacade {
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
         UserData request = new UserData(username, password, email);
+        System.out.println(request.toString());
         return this.makeRequest("POST", path, request, AuthData.class);
 
     }
