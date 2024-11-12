@@ -50,8 +50,7 @@ public class ChessClient {
             throw new ResponseException(400, "You are not signed in.");
         }
         try{
-            String gameList = server.listGames(authToken);
-            return gameList;
+            return server.listGames(authToken);
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
@@ -70,7 +69,7 @@ public class ChessClient {
             AuthData authData = server.register(username, password, email);
             authToken = authData.authToken();
 //            state = State.SIGNEDIN;
-            return "Successfully registered.";
+            return help();
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
         }
@@ -85,7 +84,7 @@ public class ChessClient {
             AuthData authData = server.login(username, password);
             authToken = authData.authToken();
 //            state = State.SIGNEDIN;
-            return "Successfully logged in.";
+            return help();
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
         }
@@ -116,20 +115,34 @@ public class ChessClient {
 
     public String help(){
         if (authToken != null){
-            System.out.println("Options:");
-            System.out.println("List current games: \"l\", \"list\"");
-            System.out.println("Create a new game: \"c\", \"create\" <GAME NAME>");
-            System.out.println("Join a game: \"j\", \"join\" <GAME ID> <COLOR>");
-            System.out.println("Watch a game: \"w\", \"watch\" <GAME ID>");
-            System.out.println("Logout: \"logout\"");
+            return """
+                    "Options:"
+                    "List current games: \\"l\\", \\"list\\""
+                    "Join a game: \\"j\\", \\"join\\" <GAME ID> <COLOR>"
+                    "Watch a game: \\"w\\", \\"watch\\" <GAME ID>"
+                    "Logout: \\"logout\\""
+                    """;
+//            System.out.println("Options:");
+//            System.out.println("List current games: \"l\", \"list\"");
+//            System.out.println("Create a new game: \"c\", \"create\" <GAME NAME>");
+//            System.out.println("Join a game: \"j\", \"join\" <GAME ID> <COLOR>");
+//            System.out.println("Watch a game: \"w\", \"watch\" <GAME ID>");
+//            System.out.println("Logout: \"logout\"");
         }
         else {
-            System.out.println("Options:");
-            System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
-            System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
-            System.out.println("Exit the program: \"q\", \"quit\"");
-            System.out.println("Print this message: \"h\", \"help\"");
+            return """
+                    "Options:"
+                    "Login as an existing user: \\"l\\", \\"login\\" <USERNAME> <PASSWORD>"
+                    "Register a new user: \\"r\\", \\"register\\" <USERNAME> <PASSWORD> <EMAIL>"
+                    "Exit the program: \\"q\\", \\"quit\\""
+                    "Print this message: \\"h\\", \\"help\\""
+                    """;
+//            System.out.println("Options:");
+//            System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
+//            System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
+//            System.out.println("Exit the program: \"q\", \"quit\"");
+//            System.out.println("Print this message: \"h\", \"help\"");
         }
-        return "";
+//        return "";
     }
 }

@@ -13,8 +13,9 @@ public class Repl {
     }
 
     public void run(){
-        System.out.println("♕ Welcome to Chess. Sign in to start. ♕");
-        client.help();
+        printPrompt();
+        System.out.println("♕ Welcome to Chess. Type Help to get started. ♕");
+//        System.out.println(client.help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
