@@ -5,7 +5,6 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
@@ -22,10 +21,10 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -100,23 +99,25 @@ public class ServerFacade {
 
     public String joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
         String path = "/game";
-        if (clientGameIDMap == null){
-            listGames(authToken);
-        }
+//        if (clientGameIDMap == null){
+        listGames(authToken);
+//        }
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
         //TODO get the type that this needs to return
         GameData gameData = this.makeRequest("PUT", path, request, GameData.class, authToken);
-        return buildBoard(new GameData(0, null, null, null, new ChessGame()));
+        return buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
     public String observeGame(Integer gameID, String authToken) throws ResponseException {
         String path = "/game";
-        if (clientGameIDMap == null){
-            listGames(authToken);
-        }
+//        if (clientGameIDMap == null){
+        listGames(authToken);
+//        }
         Integer request = clientGameIDMap.get(gameID);
         //TODO figure out observe implementation
-        return "Game being observed";//this.makeRequest("PUT", path, request, GameData.class, authToken);
+        return buildBoards(new GameData(0, null, null, null, new ChessGame()));
+
+        //return "Game being observed";//this.makeRequest("PUT", path, request, GameData.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
@@ -173,101 +174,112 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 
-    private String buildBoard(GameData gameData){
+    private String buildBoards(GameData gameData){
         ChessBoard chessBoard = gameData.game().getBoard();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("    a   b   c   d   e   f   g   h\n");
-
-        for (int row = 1; row <= 8; row++) {
-            // Print rank label
-            sb.append(8 - row).append(" ");
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = chessBoard.getPiece(position);
-                boolean isLightSquare = (row + col) % 2 == 0;
-
-                // Set background color
-                if (isLightSquare) {
-                    sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
-                } else {
-                    sb.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
-                }
-
-                if (piece == null){
-                    sb.append(EscapeSequences.EMPTY);
-                    sb.append(EscapeSequences.RESET_BG_COLOR);
-                    continue;
-                }
-                // Append piece symbol or empty space
-                switch (piece.getTeamColor()) {
-                    case WHITE:
-                        switch (piece.getPieceType()) {
-                            case KING:
-                                sb.append(EscapeSequences.WHITE_KING);
-                                break;
-                            case QUEEN:
-                                sb.append(EscapeSequences.WHITE_QUEEN);
-                                break;
-                            case BISHOP:
-                                sb.append(EscapeSequences.WHITE_BISHOP);
-                                break;
-                            case KNIGHT:
-                                sb.append(EscapeSequences.WHITE_KNIGHT);
-                                break;
-                            case ROOK:
-                                sb.append(EscapeSequences.WHITE_ROOK);
-                                break;
-                            case PAWN:
-                                sb.append(EscapeSequences.WHITE_PAWN);
-                                break;
-                            default:
-                                sb.append(EscapeSequences.EMPTY);
-                                break;
-                        }
-                        break;
-
-                    case BLACK:
-                        switch (piece.getPieceType()) {
-                            case KING:
-                                sb.append(EscapeSequences.BLACK_KING);
-                                break;
-                            case QUEEN:
-                                sb.append(EscapeSequences.BLACK_QUEEN);
-                                break;
-                            case BISHOP:
-                                sb.append(EscapeSequences.BLACK_BISHOP);
-                                break;
-                            case KNIGHT:
-                                sb.append(EscapeSequences.BLACK_KNIGHT);
-                                break;
-                            case ROOK:
-                                sb.append(EscapeSequences.BLACK_ROOK);
-                                break;
-                            case PAWN:
-                                sb.append(EscapeSequences.BLACK_PAWN);
-                                break;
-                            default:
-                                sb.append(EscapeSequences.EMPTY);
-                                break;
-                        }
-                        break;
-
-                    default:
-                        sb.append(EscapeSequences.EMPTY);
-                        break;
-                }
-
-                // Reset background color
-                sb.append(EscapeSequences.RESET_BG_COLOR);
+        //black board
+        writeHeader(sb, ChessGame.TeamColor.BLACK);
+        for (int row = 8; row >=1; row--) {
+            writeRowNum(sb, row);
+            for (int col = 8; col >= 1; col--) {
+                buildBoard(row, col, chessBoard, sb);
             }
-            sb.append(" ").append(8 - row).append("\n");
+            writeRowNum(sb, row);
+            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
         }
+        writeHeader(sb, ChessGame.TeamColor.BLACK);
 
-        // Print file labels again
-        sb.append("    a   b   c   d   e   f   g   h\n");
+        sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+
+        //white board
+        writeHeader(sb, ChessGame.TeamColor.WHITE);
+        for (int row = 1; row <= 8; row++) {
+            writeRowNum(sb, row);
+            for (int col = 1; col <= 8; col++) {
+                buildBoard(row, col, chessBoard, sb);
+            }
+            writeRowNum(sb, row);
+            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+        }
+        writeHeader(sb, ChessGame.TeamColor.WHITE);
 
         return sb.toString();
+    }
+
+    private static void buildBoard(int row, int col, ChessBoard chessBoard, StringBuilder sb) {
+        ChessPosition position = new ChessPosition(row, col);
+        ChessPiece piece = chessBoard.getPiece(position);
+        boolean whiteSquare = (row + col) % 2 == 0;
+
+        // Set square color
+        if (whiteSquare) {
+            sb.append(EscapeSequences.SET_BG_COLOR_WHITE);
+        } else {
+            sb.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+        }
+
+        //fill in the squares
+        if (piece == null){
+            sb.append(EscapeSequences.EMPTY);
+            sb.append(EscapeSequences.RESET_BG_COLOR);
+        }
+        else {
+            drawPiece(piece, sb);
+            sb.append(EscapeSequences.RESET_TEXT_COLOR);
+        }
+    }
+
+    private static void writeRowNum(StringBuilder sb, int row) {
+        sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        sb.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        sb.append(" ").append(9 - row).append("\u2003");
+    }
+
+    private static void writeHeader(StringBuilder sb, ChessGame.TeamColor color) {
+        sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        sb.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        if (color == ChessGame.TeamColor.WHITE){
+            sb.append("  \u2003 a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003  \u2003");
+        }
+        else{
+            sb.append("  \u2003 h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003  \u2003");
+        }
+        sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+    }
+
+    private static void drawPiece(ChessPiece piece, StringBuilder sb) {
+
+        if (Objects.requireNonNull(piece.getTeamColor()) == ChessGame.TeamColor.WHITE) {
+            sb.append(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        }
+        else{
+            sb.append(EscapeSequences.SET_TEXT_COLOR_RED);
+        }
+
+        switch (piece.getPieceType()) {
+            case KING:
+                sb.append(EscapeSequences.BLACK_KING);
+                break;
+            case QUEEN:
+                sb.append(EscapeSequences.BLACK_QUEEN);
+                break;
+            case BISHOP:
+                sb.append(EscapeSequences.BLACK_BISHOP);
+                break;
+            case KNIGHT:
+                sb.append(EscapeSequences.BLACK_KNIGHT);
+                break;
+            case ROOK:
+                sb.append(EscapeSequences.BLACK_ROOK);
+                break;
+            case PAWN:
+                sb.append(EscapeSequences.BLACK_PAWN);
+                break;
+            default:
+                sb.append(EscapeSequences.EMPTY);
+                break;
+        }
 
     }
 

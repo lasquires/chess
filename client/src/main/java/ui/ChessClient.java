@@ -124,8 +124,8 @@ public class ChessClient {
             throw new ResponseException(400, "You are not signed in.");
         }
         String gameID = params[0];
-        server.observeGame(Integer.valueOf(gameID), authToken);
-        return "you can now observe";
+        String game = server.observeGame(Integer.valueOf(gameID), authToken);
+        return game;
     }
 
     public String help(){
