@@ -55,6 +55,7 @@ public class ServerFacade {
     }
 
     public void createGame(String gameName, String authToken) throws ResponseException {
+
         String path = "/game";
         GameData request = new GameData(0,null, null, gameName, null);
         this.makeRequest("POST", path, request, null, authToken);
@@ -98,10 +99,15 @@ public class ServerFacade {
     }
 
     public String joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
+
         String path = "/game";
 //        if (clientGameIDMap == null){
         listGames(authToken);
 //        }
+        if (clientGameIDMap.get(gameID)==null) {
+            throw new ResponseException(400, "Game with this ID not found");
+        }
+
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
         //TODO get the type that this needs to return
         GameData gameData = this.makeRequest("PUT", path, request, GameData.class, authToken);
@@ -109,6 +115,9 @@ public class ServerFacade {
     }
 
     public String observeGame(Integer gameID, String authToken) throws ResponseException {
+        if (clientGameIDMap.get(gameID)==null) {
+            throw new ResponseException(400, "Game with this ID not found");
+        }
         String path = "/game";
 //        if (clientGameIDMap == null){
         listGames(authToken);

@@ -19,7 +19,7 @@ public class ErrorResponse {
             errorMessage="("+errorMessage+")";
         }
         response.status(responseCode);
-        errorMessage = "{\"message\": \"Error: " + errorMessage+ "\" }";
+        errorMessage = "{\"message\": \"" + errorMessage+ "\" }";
         response.body(errorMessage);
         return errorMessage;
     }
