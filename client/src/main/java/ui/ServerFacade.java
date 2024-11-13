@@ -18,12 +18,13 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
-
+    private Map<Integer, Double> clientGameIDMap;
     public ServerFacade(String url) {
         serverUrl = url;
     }
@@ -32,7 +33,7 @@ public class ServerFacade {
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
         UserData request = new UserData(username, password, email);
-        System.out.println(request.toString());
+//        System.out.println(request.toString());
         return this.makeRequest("POST", path, request, AuthData.class, null);
 
     }
@@ -55,6 +56,7 @@ public class ServerFacade {
         this.makeRequest("POST", path, request, null, authToken);
 
     }
+
     public String listGames(String authToken) throws ResponseException {
         String path = "/game";
         Object jsonObject = this.makeRequest("GET", path, null, Object.class, authToken);
@@ -70,9 +72,10 @@ public class ServerFacade {
         List<LinkedTreeMap<String, Object>> gamesList = (List<LinkedTreeMap<String, Object>>) map.get("games");
         String outString = "";
         int index = 1;
+        Map<Integer, Double> clientMap = new HashMap<>();
         for (var game : gamesList){
-//            System.out.println(game.keySet());
-//            System.out.println(game.values());
+            var id = game.get("gameID");
+            clientMap.put(index, (Double) id); //TODO, see if this causes problems as a double
             var gameName = game.get("gameName");
             String whiteUsername = "empty";
             String blackUsername = "empty";
@@ -83,9 +86,9 @@ public class ServerFacade {
                 whiteUsername = game.get("blackUsername").toString();
             }
             outString += String.format("%d.\tGame name: %s \tWhite: %s\tBlack: %s\n", index, gameName, whiteUsername, blackUsername);
-            System.out.println(outString);
             index++;
         }
+        clientGameIDMap = clientMap;
         return outString;
     }
 
