@@ -115,9 +115,9 @@ public class ChessClient {
         }
         String gameID = params[0];
         String playerColor = params[1].toUpperCase();
-        GameData gameData = server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
+        String game = server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
 
-        return "successfully joined";
+        return game;
     }
     private String observeGame(String... params) throws ResponseException {
         if (authToken == null){
