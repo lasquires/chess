@@ -132,8 +132,13 @@ public class ServerFacade {
             }
             writeBody(request, http);
             http.connect();
+
             throwIfNotSuccessful(http);
+
+
             return readBody(http, responseClass);
+
+
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -152,8 +157,22 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            String errorMessage = readErrorBody(http);
+            throw new ResponseException(status, errorMessage);
+//            throw new ResponseException(status, "failure: " + status);
         }
+    }
+
+    private String readErrorBody(HttpURLConnection http) throws IOException {
+        String errorMessage = "No error information provided";
+        try (InputStream errorStream = http.getErrorStream()) {
+            if (errorStream != null) {
+                InputStreamReader reader = new InputStreamReader(errorStream);
+                Map<String, Object> errorMap = new Gson().fromJson(reader, Map.class);
+                errorMessage = (String) errorMap.getOrDefault("message", errorMessage);
+            }
+        }
+        return errorMessage;
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {

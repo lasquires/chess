@@ -14,7 +14,7 @@ public class Repl {
 
     public void run(){
         printPrompt();
-        System.out.println("♕ Welcome to Chess. Type Help to get started. ♕");
+        System.out.println(SET_TEXT_COLOR_BLUE +"\n♕ Welcome to Chess. Type Help to get started. ♕");
 //        System.out.println(client.help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -26,8 +26,9 @@ public class Repl {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
+                System.out.println(e.getMessage());
+//                var msg = e.toString();
+//                System.out.print(msg);
             }
         }
         System.out.println();
@@ -35,7 +36,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + RESET_TEXT_COLOR + client.getState() + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

@@ -2,16 +2,14 @@ package ui;
 
 import exception.ResponseException;
 import model.AuthData;
-import model.GameData;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class ChessClient {
-    private String visitorName = null;
+    private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
-    private static boolean isLoggedIn = false;
-    private final String serverUrl;
+//    private static boolean isLoggedIn = false;
+//    private final String serverUrl;
     private String authToken = null;
 
 //    private State state = State.SIGNEDOUT;
@@ -19,7 +17,8 @@ public class ChessClient {
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl=serverUrl;
+
+//        this.serverUrl=serverUrl;
 
     }
 
@@ -44,7 +43,7 @@ public class ChessClient {
     private String register(String... params) throws ResponseException {
 
         if (params.length != 3){
-            throw new ResponseException(400, "Expected 3 params, "+ params.length + " given.");
+            throw new ResponseException(400, "Expected 3 arguments, "+ params.length + " given.");
         }
 
         String username = params[0];
@@ -53,7 +52,8 @@ public class ChessClient {
         try {
             AuthData authData = server.register(username, password, email);
             authToken = authData.authToken();
-//            state = State.SIGNEDIN;
+            state = "[LOGGED_IN]";
+            System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
@@ -62,14 +62,15 @@ public class ChessClient {
 
     private String login(String... params) throws ResponseException {
         if (params.length != 2){
-            throw new ResponseException(400, "Expected 2 params, "+ params.length + " given.");
+            throw new ResponseException(400, "Expected 2 arguments, "+ params.length + " given.");
         }
         String username = params[0];
         String password = params[1];
         try {
             AuthData authData = server.login(username, password);
             authToken = authData.authToken();
-//            state = State.SIGNEDIN;
+            state = "[LOGGED_IN]";
+            System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
@@ -82,10 +83,12 @@ public class ChessClient {
         }
         server.logout(authToken);
         authToken = null;
+        state = "[LOGGED_OUT]";
         return "logged out.";
 
     }
     private String createGame(String... params) throws ResponseException {
+
         if (authToken == null){
             throw new ResponseException(400, "Must be logged in to create a game");
         }
@@ -110,22 +113,23 @@ public class ChessClient {
         }
     }
     private String joinGame(String... params) throws ResponseException {
+        if (params.length != 2){
+            throw new ResponseException(400, "Expected 2 arguments, "+ params.length + " given.");
+        }
         if (authToken == null){
             throw new ResponseException(400, "You are not signed in.");
         }
         String gameID = params[0];
         String playerColor = params[1].toUpperCase();
-        String game = server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
 
-        return game;
+        return server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
     }
     private String observeGame(String... params) throws ResponseException {
         if (authToken == null){
             throw new ResponseException(400, "You are not signed in.");
         }
         String gameID = params[0];
-        String game = server.observeGame(Integer.valueOf(gameID), authToken);
-        return game;
+        return server.observeGame(Integer.valueOf(gameID), authToken);
     }
 
     public String help(){
@@ -150,5 +154,8 @@ public class ChessClient {
                     help - with possible commands
                     """;
         }
+    }
+    public String getState(){
+        return state;
     }
 }
