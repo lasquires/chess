@@ -56,7 +56,7 @@ public class ChessClient {
             System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage();
+            return e.getMessage();
         }
     }
 
@@ -73,7 +73,7 @@ public class ChessClient {
             System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage();
+            return e.getMessage();
         }
     }
 

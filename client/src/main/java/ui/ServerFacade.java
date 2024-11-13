@@ -176,7 +176,9 @@ public class ServerFacade {
         String errorMessage = "No error information provided";
         try (InputStream errorStream = http.getErrorStream()) {
             if (errorStream != null) {
+
                 InputStreamReader reader = new InputStreamReader(errorStream);
+                errorMessage = reader.toString();
                 Map<String, Object> errorMap = new Gson().fromJson(reader, Map.class);
                 errorMessage = (String) errorMap.getOrDefault("message", errorMessage);
             }
