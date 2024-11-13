@@ -36,7 +36,7 @@ public class ChessClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
-//                case "observe" -> observeGame(params);
+                case "observe" -> observeGame(params);
                 default -> help();
             };
     }
@@ -118,6 +118,14 @@ public class ChessClient {
         GameData gameData = server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
 
         return "successfully joined";
+    }
+    private String observeGame(String... params) throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "You are not signed in.");
+        }
+        String gameID = params[0];
+        server.observeGame(Integer.valueOf(gameID), authToken);
+        return "you can now observe";
     }
 
     public String help(){

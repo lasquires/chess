@@ -104,6 +104,16 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, request, GameData.class, authToken);
     }
 
+    public GameData observeGame(Integer gameID, String authToken) throws ResponseException {
+        String path = "/game";
+        if (clientGameIDMap == null){
+            listGames(authToken);
+        }
+        Integer request = clientGameIDMap.get(gameID);
+        //TODO figure out observe implementation
+        return new GameData(0, null, null, null, null);//this.makeRequest("PUT", path, request, GameData.class, authToken);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
