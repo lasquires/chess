@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameRequest;
 import model.UserData;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
-    private Map<Integer, Double> clientGameIDMap;
+    private Map<Integer, Integer> clientGameIDMap;
     public ServerFacade(String url) {
         serverUrl = url;
     }
@@ -72,10 +73,11 @@ public class ServerFacade {
         List<LinkedTreeMap<String, Object>> gamesList = (List<LinkedTreeMap<String, Object>>) map.get("games");
         String outString = "";
         int index = 1;
-        Map<Integer, Double> clientMap = new HashMap<>();
+        Map<Integer, Integer> clientMap = new HashMap<>();
         for (var game : gamesList){
-            var id = game.get("gameID");
-            clientMap.put(index, (Double) id); //TODO, see if this causes problems as a double
+            var id = (Double) game.get("gameID");
+
+            clientMap.put(index, id.intValue()); //TODO, see if this causes problems as an Int
             var gameName = game.get("gameName");
             String whiteUsername = "empty";
             String blackUsername = "empty";
@@ -90,6 +92,16 @@ public class ServerFacade {
         }
         clientGameIDMap = clientMap;
         return outString;
+    }
+
+    public GameData joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
+        String path = "/game";
+        if (clientGameIDMap == null){
+            listGames(authToken);
+        }
+        JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
+        //TODO get the type that this needs to return
+        return this.makeRequest("PUT", path, request, GameData.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

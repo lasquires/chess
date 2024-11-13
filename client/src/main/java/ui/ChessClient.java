@@ -13,6 +13,7 @@ public class ChessClient {
     private static boolean isLoggedIn = false;
     private final String serverUrl;
     private String authToken = null;
+
 //    private State state = State.SIGNEDOUT;
 
 
@@ -34,26 +35,10 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-//                case "play" -> playGame(params);
+                case "join" -> joinGame(params);
 //                case "observe" -> observeGame(params);
                 default -> help();
             };
-//        }catch(ResponseException ex){
-//            return ex.getMessage();
-//        }
-
-
-    }
-
-    private String listGames() throws ResponseException {
-        if (authToken == null){
-            throw new ResponseException(400, "You are not signed in.");
-        }
-        try{
-            return server.listGames(authToken);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private String register(String... params) throws ResponseException {
@@ -74,6 +59,7 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
+
     private String login(String... params) throws ResponseException {
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 params, "+ params.length + " given.");
@@ -89,6 +75,7 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
+
     private String logout() throws ResponseException {
         if (authToken == null){
             throw new ResponseException(400, "You are not signed in.");
@@ -112,37 +99,48 @@ public class ChessClient {
             return "Error: " + e.getMessage();
         }
     }
+    private String listGames() throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "You are not signed in.");
+        }
+        try{
+            return server.listGames(authToken);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private String joinGame(String... params) throws ResponseException {
+        if (authToken == null){
+            throw new ResponseException(400, "You are not signed in.");
+        }
+        String gameID = params[0];
+        String playerColor = params[1].toUpperCase();
+        GameData gameData = server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
+
+        return "successfully joined";
+    }
 
     public String help(){
         if (authToken != null){
             return """
-                    "Options:"
-                    "List current games: \\"l\\", \\"list\\""
-                    "Join a game: \\"j\\", \\"join\\" <GAME ID> <COLOR>"
-                    "Watch a game: \\"w\\", \\"watch\\" <GAME ID>"
-                    "Logout: \\"logout\\""
+                    Options:
+                    create <NAME> - a game
+                    list - games
+                    join <ID> [WHITE|BLACK] - a game
+                    observe <ID> - a game
+                    logout - when you are done
+                    quit - playing chess
+                    help - with possible commands
                     """;
-//            System.out.println("Options:");
-//            System.out.println("List current games: \"l\", \"list\"");
-//            System.out.println("Create a new game: \"c\", \"create\" <GAME NAME>");
-//            System.out.println("Join a game: \"j\", \"join\" <GAME ID> <COLOR>");
-//            System.out.println("Watch a game: \"w\", \"watch\" <GAME ID>");
-//            System.out.println("Logout: \"logout\"");
         }
         else {
             return """
-                    "Options:"
-                    "Login as an existing user: \\"l\\", \\"login\\" <USERNAME> <PASSWORD>"
-                    "Register a new user: \\"r\\", \\"register\\" <USERNAME> <PASSWORD> <EMAIL>"
-                    "Exit the program: \\"q\\", \\"quit\\""
-                    "Print this message: \\"h\\", \\"help\\""
+                    Options:
+                    login <USERNAME> <PASSWORD> - existing user account
+                    register <USERNAME> <PASSWORD> <EMAIL> - new user account
+                    quit - Exit the program
+                    help - with possible commands
                     """;
-//            System.out.println("Options:");
-//            System.out.println("Login as an existing user: \"l\", \"login\" <USERNAME> <PASSWORD>");
-//            System.out.println("Register a new user: \"r\", \"register\" <USERNAME> <PASSWORD> <EMAIL>");
-//            System.out.println("Exit the program: \"q\", \"quit\"");
-//            System.out.println("Print this message: \"h\", \"help\"");
         }
-//        return "";
     }
 }
