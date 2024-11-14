@@ -1,6 +1,5 @@
 package ui;
 
-import server.Server;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
