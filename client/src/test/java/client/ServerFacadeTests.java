@@ -41,6 +41,9 @@ public class ServerFacadeTests {
     @Test
     @Order(2)
     void registerExistingUser() throws ResponseException {
+        if (authToken==null){
+            registerNewUser();
+        }
         Assertions.assertThrows(ResponseException.class, ()->facade.register("asdf", "asdf", "asdf"));
     }
 
