@@ -51,7 +51,6 @@ public class ServerFacade {
     public void logout(String authToken) throws ResponseException {
         String path = "/session";
         this.makeRequest("DELETE", path, null, null, authToken);
-        System.out.println("Logged out successfully.");
     }
 
     public void createGame(String gameName, String authToken) throws ResponseException {

@@ -11,6 +11,12 @@ public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
+    private void checkUserDataValidity(UserData userData) throws DataAccessException {
+        if (userData.username().length() > 255 ||
+                (userData.email() != null && userData.email().length() > 255)){
+            throw new DataAccessException("username or email too long (max 255 char)");
+        }
+    }
     public UserService() throws DataAccessException {
         DataAccess dataAccess = new DataAccess(); //added
         this.userDAO = dataAccess.getUserDAO();
@@ -25,10 +31,10 @@ public class UserService {
     }
 
     public AuthData register(UserData userData) throws DataAccessException {
-
         if(userData.username()==null|| userData.password()==null|| userData.email()==null) {
             throw new DataAccessException("bad request");
         }
+        checkUserDataValidity(userData);
         if(userDAO!=null && userDAO.getUser(userData.username())!=null){
             throw new DataAccessException("already taken");
         }
@@ -43,6 +49,7 @@ public class UserService {
     }
 
     public AuthData login(UserData userData) throws DataAccessException {
+        checkUserDataValidity(userData);
         UserData userInDB = userDAO.getUser(userData.username());
         if(userInDB == null){
             throw new DataAccessException("unauthorized");
