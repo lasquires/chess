@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DataAccess {
-    private UserDAO userDAO; //= new MemoryUserDAO();
-    private GameDAO gameDAO; //= new MemoryGameDAO();
-    private AuthDAO authDAO; ////= new MemoryAuthDAO();
+    private UserDAO userDAO; //change to new MemoryUserDAO() for in memory
+    private GameDAO gameDAO; //change to new MemoryGameDAO() for in memory
+    private AuthDAO authDAO; //change new MemoryAuthDAO() for in memory
 
 
     public DataAccess() throws DataAccessException{

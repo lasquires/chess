@@ -80,7 +80,7 @@ public class ServerFacade {
         for (var game : gamesList){
             var id = (Double) game.get("gameID");
 
-            clientMap.put(index, id.intValue()); //TODO, see if this causes problems as an Int
+            clientMap.put(index, id.intValue());
             var gameName = game.get("gameName");
             String whiteUsername = "empty";
             String blackUsername = "empty";
@@ -99,9 +99,7 @@ public class ServerFacade {
 
     public String joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
         String path = "/game";
-//        if (clientGameIDMap == null){
         listGames(authToken);
-//        }
         if (clientGameIDMap.get(gameID)==null) {
             throw new ResponseException(400, "Game with this ID not found");
         }
@@ -112,7 +110,7 @@ public class ServerFacade {
         }
 
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
-        //TODO get the type that this needs to return
+        //In the future fix this
         GameData gameData = this.makeRequest("PUT", path, request, GameData.class, authToken);
         return buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
@@ -122,14 +120,11 @@ public class ServerFacade {
             throw new ResponseException(400, "Game with this ID not found");
         }
         String path = "/game";
-//        if (clientGameIDMap == null){
         listGames(authToken);
-//        }
-        Integer request = clientGameIDMap.get(gameID);
-        //TODO figure out observe implementation
-        return buildBoards(new GameData(0, null, null, null, new ChessGame()));
 
-        //return "Game being observed";//this.makeRequest("PUT", path, request, GameData.class, authToken);
+        Integer request = clientGameIDMap.get(gameID);
+        //future change w websocket?
+        return buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

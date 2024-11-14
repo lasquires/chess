@@ -8,18 +8,12 @@ import java.util.Arrays;
 public class ChessClient {
     private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
-//    private static boolean isLoggedIn = false;
-//    private final String serverUrl;
     private String authToken = null;
 
-//    private State state = State.SIGNEDOUT;
 
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-
-//        this.serverUrl=serverUrl;
-
     }
 
     public String eval(String input) throws ResponseException {
@@ -95,7 +89,6 @@ public class ChessClient {
         String gameName = params[0];
         try{
             server.createGame(gameName, authToken);
-            //TODO: fix following line
             return "Successfully created.";
 
         }catch(ResponseException e){
