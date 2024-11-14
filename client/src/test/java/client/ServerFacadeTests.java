@@ -44,7 +44,7 @@ public class ServerFacadeTests {
         if (authToken==null){
             registerNewUser();
         }
-        Assertions.assertThrows(ResponseException.class, ()->facade.register("asdf", "asdf", "asdf"));
+        Assertions.assertThrows(ResponseException.class, ()->facade.register(testUsername, "asdf", "asdf"));
     }
 
     @Test
