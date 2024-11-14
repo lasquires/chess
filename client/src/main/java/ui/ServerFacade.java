@@ -98,13 +98,17 @@ public class ServerFacade {
     }
 
     public String joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException {
-
         String path = "/game";
 //        if (clientGameIDMap == null){
         listGames(authToken);
 //        }
         if (clientGameIDMap.get(gameID)==null) {
             throw new ResponseException(400, "Game with this ID not found");
+        }
+        playerColor = playerColor.toUpperCase();
+
+        if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){
+            throw new ResponseException(400, "Invalid or null player color.");
         }
 
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
