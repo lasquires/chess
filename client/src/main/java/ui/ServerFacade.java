@@ -206,31 +206,33 @@ public class ServerFacade {
         ChessBoard chessBoard = gameData.game().getBoard();
         StringBuilder sb = new StringBuilder();
 
-        //black board
-        writeHeader(sb, ChessGame.TeamColor.BLACK);
-        for (int row = 8; row >=1; row--) {
-            writeRowNum(sb, row);
-            for (int col = 8; col >= 1; col--) {
-                buildBoard(row, col, chessBoard, sb);
-            }
-            writeRowNum(sb, row);
-            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
-        }
-        writeHeader(sb, ChessGame.TeamColor.BLACK);
-
-        sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
-
         //white board
         writeHeader(sb, ChessGame.TeamColor.WHITE);
         for (int row = 1; row <= 8; row++) {
             writeRowNum(sb, row);
-            for (int col = 1; col <= 8; col++) {
+            for (int col = 8; col >= 1; col--) {//int col = 1; col <= 8; col++) {
                 buildBoard(row, col, chessBoard, sb);
             }
             writeRowNum(sb, row);
             sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
         }
         writeHeader(sb, ChessGame.TeamColor.WHITE);
+
+        sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+
+        //black board
+        writeHeader(sb, ChessGame.TeamColor.BLACK);
+        for (int row = 8; row >=1; row--) {
+            writeRowNum(sb, row);
+            for (int col = 1; col <= 8; col++) {//int col = 8; col >= 1; col--) {
+                buildBoard(row, col, chessBoard, sb);
+            }
+            writeRowNum(sb, row);
+            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+        }
+        writeHeader(sb, ChessGame.TeamColor.BLACK);
+
+
 
         return sb.toString();
     }
@@ -238,7 +240,7 @@ public class ServerFacade {
     private static void buildBoard(int row, int col, ChessBoard chessBoard, StringBuilder sb) {
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = chessBoard.getPiece(position);
-        boolean whiteSquare = (row + col) % 2 == 0;
+        boolean whiteSquare = (row + col) % 2 == 1;
 
         // Set square color
         if (whiteSquare) {
@@ -261,17 +263,17 @@ public class ServerFacade {
     private static void writeRowNum(StringBuilder sb, int row) {
         sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         sb.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        sb.append(" ").append(9 - row).append("\u2003");
+        sb.append(" ").append(row).append("\u2003");//9 - row).append("\u2003");
     }
 
     private static void writeHeader(StringBuilder sb, ChessGame.TeamColor color) {
         sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         sb.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
         if (color == ChessGame.TeamColor.WHITE){
-            sb.append("  \u2003 a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003  \u2003");
+            sb.append("  \u2003 h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003  \u2003");
         }
         else{
-            sb.append("  \u2003 h\u2003 g\u2003 f\u2003 e\u2003 d\u2003 c\u2003 b\u2003 a\u2003  \u2003");
+            sb.append("  \u2003 a\u2003 b\u2003 c\u2003 d\u2003 e\u2003 f\u2003 g\u2003 h\u2003  \u2003");
         }
         sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
     }
