@@ -88,7 +88,7 @@ public class ServerFacade {
                 whiteUsername = game.get("whiteUsername").toString();
             }
             if (game.containsKey("blackUsername")){
-                whiteUsername = game.get("blackUsername").toString();
+                blackUsername = game.get("blackUsername").toString();
             }
             outString += String.format("%d.\tGame name: %s \tWhite: %s\tBlack: %s\n", index, gameName, whiteUsername, blackUsername);
             index++;
@@ -106,7 +106,7 @@ public class ServerFacade {
         playerColor = playerColor.toUpperCase();
 
         if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){
-            throw new ResponseException(400, "Invalid or null player color.");
+            throw new ResponseException(400, "Invalid player color.");
         }
 
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
@@ -116,11 +116,11 @@ public class ServerFacade {
     }
 
     public String observeGame(Integer gameID, String authToken) throws ResponseException {
+        listGames(authToken);
         if (clientGameIDMap.get(gameID)==null) {
             throw new ResponseException(400, "Game with this ID not found");
         }
         String path = "/game";
-        listGames(authToken);
 
         Integer request = clientGameIDMap.get(gameID);
         //future change w websocket?
@@ -242,9 +242,9 @@ public class ServerFacade {
 
         // Set square color
         if (whiteSquare) {
-            sb.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_YELLOW);//WHITE);
         } else {
-            sb.append(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+            sb.append(EscapeSequences.SET_BG_COLOR_DARK_OLIVE_GREEN3);//GREY);
         }
 
         //fill in the squares
@@ -277,38 +277,56 @@ public class ServerFacade {
     }
 
     private static void drawPiece(ChessPiece piece, StringBuilder sb) {
-
+        sb.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
         if (Objects.requireNonNull(piece.getTeamColor()) == ChessGame.TeamColor.WHITE) {
-            sb.append(EscapeSequences.SET_TEXT_COLOR_BLUE);
+            switch (piece.getPieceType()) {
+                case KING:
+                    sb.append(EscapeSequences.WHITE_KING);
+                    break;
+                case QUEEN:
+                    sb.append(EscapeSequences.WHITE_QUEEN);
+                    break;
+                case BISHOP:
+                    sb.append(EscapeSequences.WHITE_BISHOP);
+                    break;
+                case KNIGHT:
+                    sb.append(EscapeSequences.WHITE_KNIGHT);
+                    break;
+                case ROOK:
+                    sb.append(EscapeSequences.WHITE_ROOK);
+                    break;
+                case PAWN:
+                    sb.append(EscapeSequences.WHITE_PAWN);
+                    break;
+                default:
+                    sb.append(EscapeSequences.EMPTY);
+                    break;
+            }
         }
         else{
-            sb.append(EscapeSequences.SET_TEXT_COLOR_RED);
+            switch (piece.getPieceType()) {
+                case KING:
+                    sb.append(EscapeSequences.BLACK_KING);
+                    break;
+                case QUEEN:
+                    sb.append(EscapeSequences.BLACK_QUEEN);
+                    break;
+                case BISHOP:
+                    sb.append(EscapeSequences.BLACK_BISHOP);
+                    break;
+                case KNIGHT:
+                    sb.append(EscapeSequences.BLACK_KNIGHT);
+                    break;
+                case ROOK:
+                    sb.append(EscapeSequences.BLACK_ROOK);
+                    break;
+                case PAWN:
+                    sb.append(EscapeSequences.BLACK_PAWN);
+                    break;
+                default:
+                    sb.append(EscapeSequences.EMPTY);
+                    break;
+            }
         }
-
-        switch (piece.getPieceType()) {
-            case KING:
-                sb.append(EscapeSequences.BLACK_KING);
-                break;
-            case QUEEN:
-                sb.append(EscapeSequences.BLACK_QUEEN);
-                break;
-            case BISHOP:
-                sb.append(EscapeSequences.BLACK_BISHOP);
-                break;
-            case KNIGHT:
-                sb.append(EscapeSequences.BLACK_KNIGHT);
-                break;
-            case ROOK:
-                sb.append(EscapeSequences.BLACK_ROOK);
-                break;
-            case PAWN:
-                sb.append(EscapeSequences.BLACK_PAWN);
-                break;
-            default:
-                sb.append(EscapeSequences.EMPTY);
-                break;
-        }
-
     }
-
 }

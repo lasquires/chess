@@ -118,6 +118,9 @@ public class ChessClient {
         return server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
     }
     private String observeGame(String... params) throws ResponseException {
+        if (params.length != 1){
+            throw new ResponseException(400, "Expected 1 argument, "+ params.length + " given.");
+        }
         if (authToken == null){
             throw new ResponseException(400, "You are not signed in.");
         }
