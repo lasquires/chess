@@ -38,7 +38,7 @@ public class ServerFacade {
 
     }
 
-    public void connectWebSocket(){
+    private void connectWebSocket(){
         String url = serverUrl;
         try {
             url = url.replace("http", "ws");
@@ -50,7 +50,7 @@ public class ServerFacade {
         }
     }
 
-    public void sendWSMessage(String message){
+    private void sendWSMessage(String message){
         if (webSocketCommunicator!=null){
             webSocketCommunicator.sendMessage(message);
         }
@@ -132,6 +132,8 @@ public class ServerFacade {
         }
 
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
+
+
         //In the future fix this
         GameData gameData = this.makeRequest("PUT", path, request, GameData.class, authToken);
         return buildBoards(new GameData(0, null, null, null, new ChessGame()));
@@ -229,20 +231,18 @@ public class ServerFacade {
         StringBuilder sb = new StringBuilder();
 
         //white board
-        writeHeader(sb, ChessGame.TeamColor.WHITE);
-        for (int row = 1; row <= 8; row++) {
-            writeRowNum(sb, row);
-            for (int col = 8; col >= 1; col--) {//int col = 1; col <= 8; col++) {
-                buildBoard(row, col, chessBoard, sb);
-            }
-            writeRowNum(sb, row);
-            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
-        }
-        writeHeader(sb, ChessGame.TeamColor.WHITE);
+        buildWhiteBoard(sb, chessBoard);
 
         sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
 
         //black board
+        buildBlackBoard(sb, chessBoard);
+
+
+        return sb.toString();
+    }
+
+    private static void buildBlackBoard(StringBuilder sb, ChessBoard chessBoard) {
         writeHeader(sb, ChessGame.TeamColor.BLACK);
         for (int row = 8; row >=1; row--) {
             writeRowNum(sb, row);
@@ -253,10 +253,19 @@ public class ServerFacade {
             sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
         }
         writeHeader(sb, ChessGame.TeamColor.BLACK);
+    }
 
-
-
-        return sb.toString();
+    private static void buildWhiteBoard(StringBuilder sb, ChessBoard chessBoard) {
+        writeHeader(sb, ChessGame.TeamColor.WHITE);
+        for (int row = 1; row <= 8; row++) {
+            writeRowNum(sb, row);
+            for (int col = 8; col >= 1; col--) {//int col = 1; col <= 8; col++) {
+                buildBoard(row, col, chessBoard, sb);
+            }
+            writeRowNum(sb, row);
+            sb.append(EscapeSequences.RESET_BG_COLOR).append("\n");
+        }
+        writeHeader(sb, ChessGame.TeamColor.WHITE);
     }
 
     private static void buildBoard(int row, int col, ChessBoard chessBoard, StringBuilder sb) {
