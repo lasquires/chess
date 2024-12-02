@@ -26,7 +26,11 @@ public class WebSocketCommunicator {
         }
 
     }
-
+//    public String sendWSMessage(String message){
+//
+//            return this.sendMessage(message);
+//
+//    }
 
 //    private void connectWebSocket(){
 //        String url = serverUrl;
@@ -62,19 +66,25 @@ public class WebSocketCommunicator {
         ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
         notifyObservers(serverMessage);
     }
-//
-//    @OnClose
-//    public void onClose(Session session, CloseReason reason) {
-//        System.out.println("Connection closed: " + reason.getReasonPhrase());
-//    }
-//
-//    @OnError
-//    public void onError(Session session, Throwable throwable) {
-//        throwable.printStackTrace();
-//    }
-//
+
+    @OnClose
+    public void onClose(Session session, CloseReason reason) {
+        System.out.println("Connection closed: " + reason.getReasonPhrase());
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        System.err.println("WebSocket error occurred:");
+        throwable.printStackTrace();
+    }
+
     public void sendMessage(String message) {
-        session.getAsyncRemote().sendText(message);
+        if (session != null && session.isOpen()) {
+            session.getAsyncRemote().sendText(message);
+            System.out.println("Sent message: " + message);
+        } else {
+            throw new IllegalStateException("WebSocket session is not connected.");
+        }
     }
 //
 //    public void addObserver(ServerMessageObserver observer) {

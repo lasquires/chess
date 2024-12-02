@@ -43,6 +43,6 @@ public class Repl implements ServerMessageObserver{
     @Override
     public void notify(ServerMessage message) {
         System.out.println(SET_TEXT_COLOR_GREEN + message);
-        printPrompt();
+
     }
 }

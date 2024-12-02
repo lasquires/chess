@@ -49,24 +49,8 @@ public class ServerFacade{
         this.webSocketCommunicator.connect();
     }
 
-//    private void connectWebSocket(){
-//        String url = serverUrl;
-//        try {
-//            url = url.replace("http", "ws");
-//            URI uri = new URI(url + "/ws");
-//            webSocketCommunicator = new WebSocketCommunicator(uri);
-//            webSocketCommunicator.connect();
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
 
-    private void sendWSMessage(String message){
-        if (webSocketCommunicator!=null){
-            webSocketCommunicator.sendMessage(message);
-        }
-    }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
@@ -148,7 +132,7 @@ public class ServerFacade{
         //added for websocket
         String message = new Gson().toJson(request);
 
-        sendWSMessage(message);
+        webSocketCommunicator.sendMessage(message);
 
         if (webSocketCommunicator == null) {
             throw new IllegalStateException("WebSocket is not connected");
