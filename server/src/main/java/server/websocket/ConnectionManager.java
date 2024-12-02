@@ -2,10 +2,11 @@ package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
 
+import javax.management.Notification;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import webSocketMessages.Notification;
+//import webSocketMessages.Notification;
 
 
 public class ConnectionManager {
@@ -24,7 +25,7 @@ public class ConnectionManager {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
+                if (!c.username.equals(excludeVisitorName)) {
                     c.send(notification.toString());
                 }
             } else {
@@ -34,6 +35,7 @@ public class ConnectionManager {
 
         // Clean up any connections that were left open.
         for (var c : removeList) {
-            connections.remove(c.visitorName);
+            connections.remove(c.username);
         }
     }
+}
