@@ -1,11 +1,14 @@
 package ui;
 
+import com.google.gson.Gson;
+import websocket.messages.ServerMessage;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.websocket.*;
 
-
+@ClientEndpoint
 public class WebSocketCommunicator {
     private URI serverUri;
     private Session session;
@@ -49,16 +52,16 @@ public class WebSocketCommunicator {
             throw new RuntimeException(e);
         }
     }
-//    @OnOpen
-//    public void onOpen(Session session) {
-//        System.out.println("Connected to server");
-//    }
-//
-//    @OnMessage
-//    public void onMessage(String message) {
-//        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-//        notifyObservers(serverMessage);
-//    }
+    @OnOpen
+    public void onOpen(Session session) {
+        System.out.println("Connected to server");
+    }
+
+    @OnMessage
+    public void onMessage(String message) {
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+        notifyObservers(serverMessage);
+    }
 //
 //    @OnClose
 //    public void onClose(Session session, CloseReason reason) {
@@ -78,11 +81,11 @@ public class WebSocketCommunicator {
 //        observers.add(observer);
 //    }
 
-//    private void notifyObservers(ServerMessage message) {
+    private void notifyObservers(ServerMessage message) {
 //        for (ServerMessageObserver observer : observers) {
-//            observer.notify(message);
+            observer.notify(message);
 //        }
-//    }
+    }
 
 }
 

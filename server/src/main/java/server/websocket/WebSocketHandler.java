@@ -47,10 +47,17 @@ public class WebSocketHandler {
                     connect(session, username, connectCommand);//(ConnectCommand) command);
                 }
                 case MAKE_MOVE -> {
-                    makeMove(session, username, (MakeMoveCommand) command);
+                    MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
+                    makeMove(session, username, makeMoveCommand);
                 }
-                case LEAVE -> leaveGame(session, username, (LeaveGameCommand) command);
-                case RESIGN -> resign(session, username, (ResignCommand) command);
+                case LEAVE -> {
+                    LeaveGameCommand leaveGameCommand = new Gson().fromJson(message, LeaveGameCommand.class);
+                    leaveGame(session, username, leaveGameCommand);
+                }
+                case RESIGN -> {
+                    ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
+                    resign(session, username, resignCommand);
+                }
                 default -> throw new ResponseException(500, "unable to connect");
             }
         }
