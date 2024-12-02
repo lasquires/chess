@@ -4,8 +4,13 @@ import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
+import ui.ServerMessageObserver;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
+
+import static ui.EscapeSequences.RESET_TEXT_COLOR;
+import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
 
 
 public class ServerFacadeTests {
@@ -14,14 +19,22 @@ public class ServerFacadeTests {
     private static ServerFacade facade;
     private String authToken;
     private static String testUsername;
+    private static ServerMessageObserver serverMessageObserver;
 
 
     @BeforeAll
     public static void init() {
+        serverMessageObserver = new ServerMessageObserver() {
+            @Override
+            public void notify(ServerMessage message) {
+                System.out.println(SET_TEXT_COLOR_GREEN + message);
+                System.out.print("\n" + RESET_TEXT_COLOR +" >>> " + SET_TEXT_COLOR_GREEN);
+            }
+        };
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:"+port);
+        facade = new ServerFacade("http://localhost:"+port, serverMessageObserver);
 
     }
 

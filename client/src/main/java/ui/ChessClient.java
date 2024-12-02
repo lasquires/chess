@@ -10,14 +10,16 @@ import java.util.Arrays;
 public class ChessClient implements ServerMessageObserver{
     private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
+    private final ServerMessageObserver serverMessageObserver;
 //    private WebSocketCommunicator webSocketCommunicator;
 //    private ChessBoard chessBoard;
     private String authToken = null;
 
 
 
-    public ChessClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+    public ChessClient(String serverUrl, ServerMessageObserver serverMessageObserver) {
+        server = new ServerFacade(serverUrl, serverMessageObserver);
+        this.serverMessageObserver = serverMessageObserver;
     }
 
     public String eval(String input) throws ResponseException {

@@ -12,7 +12,11 @@ import model.AuthData;
 import model.GameData;
 import model.JoinGameRequest;
 import model.UserData;
+import websocket.messages.ServerMessage;
 
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.Session;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,28 +32,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class ServerFacade {
+public class ServerFacade{
     private final String serverUrl;
     private Map<Integer, Integer> clientGameIDMap;
     private WebSocketCommunicator webSocketCommunicator;
+    private ServerMessageObserver serverMessageObserver;
+    private Session session;
+    private HttpCommunicator httpCommunicator;
 
 
-    public ServerFacade(String url) {
+    public ServerFacade(String url, ServerMessageObserver serverMessageObserver) {
         serverUrl = url;
-
+        this.httpCommunicator = new HttpCommunicator(serverUrl);
+//        this.serverMessageObserver = serverMessageObserver;
+        this.webSocketCommunicator = new WebSocketCommunicator(serverUrl, serverMessageObserver);
+        this.webSocketCommunicator.connect();
     }
 
-    private void connectWebSocket(){
-        String url = serverUrl;
-        try {
-            url = url.replace("http", "ws");
-            URI uri = new URI(url + "/ws");
-            webSocketCommunicator = new WebSocketCommunicator(uri);
-            webSocketCommunicator.connect();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    private void connectWebSocket(){
+//        String url = serverUrl;
+//        try {
+//            url = url.replace("http", "ws");
+//            URI uri = new URI(url + "/ws");
+//            webSocketCommunicator = new WebSocketCommunicator(uri);
+//            webSocketCommunicator.connect();
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
 
     private void sendWSMessage(String message){
         if (webSocketCommunicator!=null){
@@ -61,32 +72,32 @@ public class ServerFacade {
         String path = "/user";
         UserData request = new UserData(username, password, email);
 //        System.out.println(request.toString());
-        return this.makeRequest("POST", path, request, AuthData.class, null);
+        return httpCommunicator.makeRequest("POST", path, request, AuthData.class, null);
 
     }
 
     public AuthData login(String username, String password) throws ResponseException {
         String path = "/session";
         UserData request = new UserData(username, password, null);
-        return this.makeRequest("POST", path, request, AuthData.class, null);
+        return httpCommunicator.makeRequest("POST", path, request, AuthData.class, null);
     }
 
     public void logout(String authToken) throws ResponseException {
         String path = "/session";
-        this.makeRequest("DELETE", path, null, null, authToken);
+        httpCommunicator.makeRequest("DELETE", path, null, null, authToken);
     }
 
     public void createGame(String gameName, String authToken) throws ResponseException {
 
         String path = "/game";
         GameData request = new GameData(0,null, null, gameName, null);
-        this.makeRequest("POST", path, request, null, authToken);
+        httpCommunicator.makeRequest("POST", path, request, null, authToken);
 
     }
 
     public String listGames(String authToken) throws ResponseException {
         String path = "/game";
-        Object jsonObject = this.makeRequest("GET", path, null, Object.class, authToken);
+        Object jsonObject = httpCommunicator.makeRequest("GET", path, null, Object.class, authToken);
         Gson gson = new Gson();
         String jsonString = gson.toJson(jsonObject);
 
@@ -134,9 +145,19 @@ public class ServerFacade {
 
         JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
 
+        //added for websocket
+        String message = new Gson().toJson(request);
+
+        sendWSMessage(message);
+
+        if (webSocketCommunicator == null) {
+            throw new IllegalStateException("WebSocket is not connected");
+        }
+
+
 
         //In the future fix this
-        GameData gameData = this.makeRequest("PUT", path, request, GameData.class, authToken);
+        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
         return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
@@ -152,80 +173,79 @@ public class ServerFacade {
         return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
-        try {
-            URL url = (new URI(serverUrl + path)).toURL();
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod(method);
-            http.setDoOutput(true);
-
-            if (authToken != null){
-                http.setRequestProperty("authorization", authToken);
-            }
-            writeBody(request, http);
-            http.connect();
-
-            throwIfNotSuccessful(http);
-
-
-            return readBody(http, responseClass);
-
-
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
-
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-        if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
-            try (OutputStream reqBody = http.getOutputStream()) {
-                reqBody.write(reqData.getBytes());
-            }
-        }
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            String errorMessage = readErrorBody(http);
-            throw new ResponseException(status, errorMessage);
-//            throw new ResponseException(status, "failure: " + status);
-        }
-    }
-
-    private String readErrorBody(HttpURLConnection http) throws IOException {
-        String errorMessage = "No error information provided";
-        try (InputStream errorStream = http.getErrorStream()) {
-            if (errorStream != null) {
-
-                InputStreamReader reader = new InputStreamReader(errorStream);
-                errorMessage = reader.toString();
-                Map<String, Object> errorMap = new Gson().fromJson(reader, Map.class);
-                errorMessage = (String) errorMap.getOrDefault("message", errorMessage);
-            }
-        }
-        return errorMessage;
-    }
-
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-        T response = null;
-        if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
-            }
-        }
-        return response;
-    }
-
-
-    private boolean isSuccessful(int status) {
-        return status / 100 == 2;
-    }
+//    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
+//        try {
+//            URL url = (new URI(serverUrl + path)).toURL();
+//            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+//            http.setRequestMethod(method);
+//            http.setDoOutput(true);
+//
+//            if (authToken != null){
+//                http.setRequestProperty("authorization", authToken);
+//            }
+//            writeBody(request, http);
+//            http.connect();
+//
+//            throwIfNotSuccessful(http);
+//
+//
+//            return readBody(http, responseClass);
+//
+//
+//        } catch (Exception ex) {
+//            throw new ResponseException(500, ex.getMessage());
+//        }
+//    }
+//
+//    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+//        if (request != null) {
+//            http.addRequestProperty("Content-Type", "application/json");
+//            String reqData = new Gson().toJson(request);
+//            try (OutputStream reqBody = http.getOutputStream()) {
+//                reqBody.write(reqData.getBytes());
+//            }
+//        }
+//    }
+//
+//    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+//        var status = http.getResponseCode();
+//        if (!isSuccessful(status)) {
+//            String errorMessage = readErrorBody(http);
+//            throw new ResponseException(status, errorMessage);
+////            throw new ResponseException(status, "failure: " + status);
+//        }
+//    }
+//
+//    private String readErrorBody(HttpURLConnection http) throws IOException {
+//        String errorMessage = "No error information provided";
+//        try (InputStream errorStream = http.getErrorStream()) {
+//            if (errorStream != null) {
+//
+//                InputStreamReader reader = new InputStreamReader(errorStream);
+//                errorMessage = reader.toString();
+//                Map<String, Object> errorMap = new Gson().fromJson(reader, Map.class);
+//                errorMessage = (String) errorMap.getOrDefault("message", errorMessage);
+//            }
+//        }
+//        return errorMessage;
+//    }
+//
+//    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+//        T response = null;
+//        if (http.getContentLength() < 0) {
+//            try (InputStream respBody = http.getInputStream()) {
+//                InputStreamReader reader = new InputStreamReader(respBody);
+//                if (responseClass != null) {
+//                    response = new Gson().fromJson(reader, responseClass);
+//                }
+//            }
+//        }
+//        return response;
+//    }
+//
+//    private boolean isSuccessful(int status) {
+//        return status / 100 == 2;
+//    }
 
 //    private String buildBoards(GameData gameData){
 //        ChessBoard chessBoard = gameData.game().getBoard();
