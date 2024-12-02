@@ -6,27 +6,28 @@ import javax.management.Notification;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-//import webSocketMessages.Notification;
+import websocket.messages.ServerMessage;
 
 
 public class ConnectionManager {
+    //TODO: make sure that the map is username: session (not gameID)
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
-    public void add(String visitorName, Session session) {
-        var connection = new Connection(visitorName, session);
-        connections.put(visitorName, connection);
+    public void add(String username, Session session) {
+        var connection = new Connection(username, session);
+        connections.put(username, connection);
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
+    public void remove(String username) {
+        connections.remove(username);
     }
 
-    public void broadcast(String excludeVisitorName, Notification notification) throws IOException {
+    public void broadcast(String excludeUsername, ServerMessage message) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.username.equals(excludeVisitorName)) {
-                    c.send(notification.toString());
+                if (!c.username.equals(excludeUsername)) {
+                    c.send(message.toString());
                 }
             } else {
                 removeList.add(c);
