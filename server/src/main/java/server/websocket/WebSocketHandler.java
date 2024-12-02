@@ -1,17 +1,20 @@
 package server.websocket;
 
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import exception.ResponseException;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -38,7 +41,7 @@ public class WebSocketHandler {
             //put the session in the ConnectionManagerMap
             Integer gameID = command.getGameID();
             //TODO: make sure that the map is username: session (not gameID)
-            connections.add(gameID, session);
+            connections.add(username, gameID, session);
 //            saveSession(command.getGameID(), session);
 
             switch (command.getCommandType()) {
@@ -107,6 +110,7 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, String username, MakeMoveCommand command) {
         try{
+            new LoadGameMessage(new GameData(1, null, null, "newgame", new ChessGame()));
             System.out.println("in makeMove()");
         }
         catch (Exception ex){
