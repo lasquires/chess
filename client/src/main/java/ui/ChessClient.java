@@ -1,13 +1,17 @@
 package ui;
 
+import chess.ChessBoard;
 import exception.ResponseException;
 import model.AuthData;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
-public class ChessClient {
+public class ChessClient implements ServerMessageObserver{
     private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
+//    private WebSocketCommunicator webSocketCommunicator;
+//    private ChessBoard chessBoard;
     private String authToken = null;
 
 
@@ -153,5 +157,10 @@ public class ChessClient {
     }
     public String getState(){
         return state;
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        System.out.println("Server Update: " + message);
     }
 }

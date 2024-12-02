@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +30,31 @@ import java.util.Objects;
 public class ServerFacade {
     private final String serverUrl;
     private Map<Integer, Integer> clientGameIDMap;
+    private WebSocketCommunicator webSocketCommunicator;
+
+
     public ServerFacade(String url) {
         serverUrl = url;
+
     }
 
+    public void connectWebSocket(){
+        String url = serverUrl;
+        try {
+            url = url.replace("http", "ws");
+            URI uri = new URI(url + "/ws");
+            webSocketCommunicator = new WebSocketCommunicator(uri);
+            webSocketCommunicator.connect();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendWSMessage(String message){
+        if (webSocketCommunicator!=null){
+            webSocketCommunicator.sendMessage(message);
+        }
+    }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
         String path = "/user";
