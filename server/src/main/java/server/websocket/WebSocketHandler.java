@@ -40,7 +40,10 @@ public class WebSocketHandler {
 //            saveSession(command.getGameID(), session);
 
             switch (command.getCommandType()) {
-                case CONNECT -> connect(session, username, (ConnectCommand) command);
+                case CONNECT -> {
+                    ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+                    connect(session, username, connectCommand);
+                }
                 case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
                 case LEAVE -> leaveGame(session, username, (LeaveGameCommand) command);
                 case RESIGN -> resign(session, username, (ResignCommand) command);
@@ -81,6 +84,7 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) {
         try{
             System.out.println("hi");
+
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);

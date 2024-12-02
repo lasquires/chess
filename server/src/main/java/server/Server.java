@@ -10,8 +10,12 @@ public class Server {
 
     private final WebSocketHandler webSocketHandler;
 
-    public Server() throws DataAccessException {
-        this.webSocketHandler = new WebSocketHandler();
+    public Server() {
+        try {
+            this.webSocketHandler = new WebSocketHandler();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {
