@@ -125,4 +125,8 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
+
+
+
+
 }

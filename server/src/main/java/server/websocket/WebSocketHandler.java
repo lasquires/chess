@@ -56,11 +56,11 @@ public class WebSocketHandler {
         }
         catch (ResponseException ex) {
             // Serializes and sends the error message
-            sendMessage(session.getRemote(), new ErrorMessage(ServerMessage.ServerMessageType.ERROR));
+            sendMessage(session.getRemote(), new ErrorMessage("Invalid Session"));
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            sendMessage(session.getRemote(), new ErrorMessage(ServerMessage.ServerMessageType.ERROR));
+            sendMessage(session.getRemote(), new ErrorMessage("Unknown error occured"));
         }
     }
 
@@ -90,7 +90,7 @@ public class WebSocketHandler {
             System.out.println("in connect()");
         }
         catch (Exception ex){
-            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            ErrorMessage error =  new ErrorMessage("Unable to connect");
         }
         //A user connected to the game as a player (black or white).
         // The notification message should include the player’s name and which side they are playing (black or white).
@@ -103,7 +103,7 @@ public class WebSocketHandler {
             System.out.println("in makeMove()");
         }
         catch (Exception ex){
-            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            ErrorMessage error =  new ErrorMessage("unable to make move");
         }
         //A player made a move. The notification message should include the player’s name and a description
         // of the move that was made. (This is in addition to the board being updated on each player’s screen.)
@@ -114,7 +114,7 @@ public class WebSocketHandler {
             System.out.println("in leaveGame()");
         }
         catch (Exception ex){
-            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            ErrorMessage error =  new ErrorMessage("Unable to leave game");
         }
         //A player left the game. The notification message should include the player’s name.
     }
@@ -124,7 +124,7 @@ public class WebSocketHandler {
             System.out.println("in resign()");
         }
         catch (Exception ex){
-            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+            ErrorMessage error =  new ErrorMessage("Unable to resign");
         }
         //A player resigned the game. The notification message should include the player’s name.
     }
