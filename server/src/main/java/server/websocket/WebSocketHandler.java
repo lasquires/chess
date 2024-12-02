@@ -32,19 +32,23 @@ public class WebSocketHandler {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
             // valid auth? get associated username else throw error
+
             String username = getUsername(command.getAuthToken());
 
             //put the session in the ConnectionManagerMap
+            Integer gameID = command.getGameID();
             //TODO: make sure that the map is username: session (not gameID)
-            connections.add(username, session);
+            connections.add(gameID, session);
 //            saveSession(command.getGameID(), session);
 
             switch (command.getCommandType()) {
                 case CONNECT -> {
                     ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
-                    connect(session, username, connectCommand);
+                    connect(session, username, connectCommand);//(ConnectCommand) command);
                 }
-                case MAKE_MOVE -> makeMove(session, username, (MakeMoveCommand) command);
+                case MAKE_MOVE -> {
+                    makeMove(session, username, (MakeMoveCommand) command);
+                }
                 case LEAVE -> leaveGame(session, username, (LeaveGameCommand) command);
                 case RESIGN -> resign(session, username, (ResignCommand) command);
                 default -> throw new ResponseException(500, "unable to connect");
@@ -83,8 +87,7 @@ public class WebSocketHandler {
 
     private void connect(Session session, String username, ConnectCommand command) {
         try{
-            System.out.println("hi");
-
+            System.out.println("in connect()");
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
@@ -96,15 +99,33 @@ public class WebSocketHandler {
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) {
+        try{
+            System.out.println("in makeMove()");
+        }
+        catch (Exception ex){
+            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+        }
         //A player made a move. The notification message should include the player’s name and a description
         // of the move that was made. (This is in addition to the board being updated on each player’s screen.)
     }
 
     private void leaveGame(Session session, String username, LeaveGameCommand command) {
+        try{
+            System.out.println("in leaveGame()");
+        }
+        catch (Exception ex){
+            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+        }
         //A player left the game. The notification message should include the player’s name.
     }
 
     private void resign(Session session, String username, ResignCommand command) {
+        try{
+            System.out.println("in resign()");
+        }
+        catch (Exception ex){
+            ErrorMessage error =  new ErrorMessage(ServerMessage.ServerMessageType.ERROR);
+        }
         //A player resigned the game. The notification message should include the player’s name.
     }
 

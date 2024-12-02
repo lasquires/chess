@@ -10,8 +10,8 @@ public class Connection {
     public Session session;
     public Integer gameID;
 
-    public Connection(String username, Session session) {
-        this.username = username;
+    public Connection(Integer gameID, Session session) {
+        this.gameID = gameID;
         this.session = session;
     }
 
