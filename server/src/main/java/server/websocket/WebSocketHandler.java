@@ -15,6 +15,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -97,7 +98,13 @@ public class WebSocketHandler {
 
     private void connect(Session session, String username, ConnectCommand command) {
         try{
-            System.out.println("in connect()");
+            connections.add(username, command.getGameID(), session);
+            String message = username + " connected to the game.";
+            ServerMessage notification = new NotificationMessage(message);
+            connections.broadcast(command.getGameID(), username, notification);
+
+            System.out.println("User " + username + " connected to game ID " + command.getGameID());
+//            System.out.println(command.getGameID());
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage("Unable to connect");
