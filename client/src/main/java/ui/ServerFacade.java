@@ -12,6 +12,8 @@ import model.AuthData;
 import model.GameData;
 import model.JoinGameRequest;
 import model.UserData;
+import websocket.commands.ConnectCommand;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.Endpoint;
@@ -46,7 +48,7 @@ public class ServerFacade{
         this.httpCommunicator = new HttpCommunicator(serverUrl);
 //        this.serverMessageObserver = serverMessageObserver;
         this.webSocketCommunicator = new WebSocketCommunicator(serverUrl, serverMessageObserver);
-        this.webSocketCommunicator.connect();
+//        this.webSocketCommunicator.connect();
     }
 
 
@@ -127,22 +129,28 @@ public class ServerFacade{
             throw new ResponseException(400, "Invalid player color.");
         }
 
-        JoinGameRequest request = new JoinGameRequest(clientGameIDMap.get(gameID), playerColor);
+        Integer serverGameID = clientGameIDMap.get(gameID);
+        JoinGameRequest request = new JoinGameRequest(serverGameID, playerColor);
+
 
         //added for websocket
         String message = new Gson().toJson(request);
 
-        webSocketCommunicator.sendMessage(message);
 
         if (webSocketCommunicator == null) {
             throw new IllegalStateException("WebSocket is not connected");
         }
 
+        ConnectCommand connectCommand = new ConnectCommand(authToken, serverGameID);
+        NotificationMessage notification = new NotificationMessage("Observing game: " + serverGameID);
+        webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
+//        webSocketCommunicator.sendMessage(message);
 
 
-        //In the future fix this
-        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
-        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
+        return "joined successfully";
+//        //In the future fix this
+//        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
+//        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
     public String observeGame(Integer gameID, String authToken) throws ResponseException {
@@ -152,9 +160,14 @@ public class ServerFacade{
         }
         String path = "/game";
 
-        Integer request = clientGameIDMap.get(gameID);
+        Integer serverGameID = clientGameIDMap.get(gameID);
+
+        ConnectCommand connectCommand = new ConnectCommand(authToken, serverGameID);
+        NotificationMessage notification = new NotificationMessage("Observing game: " + serverGameID);
+        webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
+        return "Now observing game: " + serverGameID;
         //future change w websocket?
-        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
+//        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
 //    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

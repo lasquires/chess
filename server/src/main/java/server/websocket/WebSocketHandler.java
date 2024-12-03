@@ -32,6 +32,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
+        System.out.println("in onMessage()");
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
@@ -47,6 +48,7 @@ public class WebSocketHandler {
 
             switch (command.getCommandType()) {
                 case CONNECT -> {
+                    System.out.println("Received command: " + command.getCommandType());
                     ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
                     connect(session, username, connectCommand);//(ConnectCommand) command);
                 }
@@ -97,10 +99,11 @@ public class WebSocketHandler {
 
 
     private void connect(Session session, String username, ConnectCommand command) {
+        System.out.println("In connect(): username = " + username + ", gameID = " + command.getGameID());
         try{
             connections.add(username, command.getGameID(), session);
             String message = username + " connected to the game.";
-            ServerMessage notification = new NotificationMessage(message);
+            NotificationMessage notification = new NotificationMessage(message);
             connections.broadcast(command.getGameID(), username, notification);
 
             System.out.println("User " + username + " connected to game ID " + command.getGameID());
