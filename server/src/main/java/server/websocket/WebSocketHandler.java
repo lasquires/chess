@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -18,13 +19,14 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private final AuthDAO authDAO = new DataAccess().getAuthDAO();
-//    private final GameDAO gameDAO = new DataAccess().getGameDAO();
+    private final GameDAO gameDAO = new DataAccess().getGameDAO();
 
     public WebSocketHandler() throws DataAccessException {
     }
@@ -158,9 +160,25 @@ public class WebSocketHandler {
             System.out.println("in leaveGame()");
             Integer gameID = command.getGameID();
 
+            GameData gameData = gameDAO.getGame(gameID);
+            String whiteUsername = gameData.whiteUsername();
+            if (Objects.equals(username, whiteUsername)){
+                whiteUsername = null;
+            }
+
+            String blackUsername = gameData.blackUsername();
+            if (Objects.equals(blackUsername, username)){
+                blackUsername = null;
+            }
+
+
+            GameData updatedGame = new GameData(gameID, whiteUsername, blackUsername, gameData.gameName(), gameData.game());
+            gameDAO.updateGame(updatedGame);
             connections.remove(gameID, username);
             NotificationMessage notification = new NotificationMessage(username + " has left the game.");
             connections.broadcast(gameID, username, notification);
+
+
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage("Unable to leave game");
