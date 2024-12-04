@@ -1,6 +1,8 @@
 package ui;
 
 import com.google.gson.Gson;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -26,20 +28,49 @@ public class WebSocketCommunicator extends Endpoint{
             this.session = container.connectToServer(this, serverUri);
 
             //set message handler
+//            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+//                @Override
+//                public void onMessage(String message) {
+//
+//                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+//
+//                    observer.notify(notification);
+//
+//                }
+//            });
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-//                    System.out.println("in onMessage() inside of WebsocketCommunicator");
-//                    System.out.println("Raw message: " + message);
+//                    try {
 
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
 
-//                    System.out.println("Notification received: " + notification.getMessage());
-                    observer.notify(notification);
-//                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-//                    observer.notify(serverMessage);
+                        // Parse the base ServerMessage to determine the type
+                        ServerMessage baseMessage = new Gson().fromJson(message, ServerMessage.class);
+
+                        switch (baseMessage.getServerMessageType()) {
+                            case NOTIFICATION -> {
+                                NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+                                observer.notify(notification);
+                            }
+                            case ERROR -> {
+                                ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
+                                observer.notify(error);
+                            }
+                            case LOAD_GAME -> {
+                                LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
+                                observer.notify(loadGame);
+                            }
+                            default -> {
+                                System.out.println("Unknown message type received: " + baseMessage.getServerMessageType());
+                            }
+                        }
+//                    } catch (Exception e) {
+//                        System.err.println("Failed to process message: " + message);
+//                        e.printStackTrace();
+//                    }
                 }
             });
+
 
 
 
