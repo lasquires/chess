@@ -117,9 +117,10 @@ public class ChessClient{//} implements ServerMessageObserver{
         }
     }
     private String logout() throws ResponseException {
-        if (authToken == null){
-            throw new ResponseException(400, "You are not signed in.");
-        }
+//        if (authToken == null){
+//            throw new ResponseException(400, "You are not signed in.");
+//        }
+        if (state != State.SIGNEDIN){return help();}
         server.logout(authToken);
         authToken = null;
         state = State.SIGNEDOUT;//"[LOGGED_OUT]";
@@ -128,9 +129,11 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
     private String createGame(String... params) throws ResponseException {
 
-        if (authToken == null){
-            throw new ResponseException(400, "Must be logged in to create a game");
-        }
+//        if (authToken == null){
+//            throw new ResponseException(400, "Must be logged in to create a game");
+//        }
+        if (state != State.SIGNEDIN){return help();}
+
         String gameName = params[0];
         try{
             server.createGame(gameName, authToken);
@@ -141,9 +144,11 @@ public class ChessClient{//} implements ServerMessageObserver{
         }
     }
     private String listGames() throws ResponseException {
-        if (authToken == null){
-            throw new ResponseException(400, "You are not signed in.");
-        }
+//        if (authToken == null){
+//            throw new ResponseException(400, "You are not signed in.");
+//        }
+        if (state != State.SIGNEDIN){return help();}
+
         try{
             return server.listGames(authToken);
         } catch (ResponseException e) {
@@ -151,12 +156,14 @@ public class ChessClient{//} implements ServerMessageObserver{
         }
     }
     private String joinGame(String... params) throws ResponseException {
+        if (state != State.SIGNEDIN){return help();}
+
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 arguments, "+ params.length + " given.");
         }
-        if (authToken == null){
-            throw new ResponseException(400, "You are not signed in.");
-        }
+//        if (authToken == null){
+//            throw new ResponseException(400, "You are not signed in.");
+//        }
         String gameID = params[0];
         String playerColor = params[1].toUpperCase();
 
@@ -166,12 +173,14 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
 
     private String observeGame(String... params) throws ResponseException {
+        if (state != State.SIGNEDIN){return help();}
+
         if (params.length != 1){
             throw new ResponseException(400, "Expected 1 argument, "+ params.length + " given.");
         }
-        if (authToken == null){
-            throw new ResponseException(400, "You are not signed in.");
-        }
+//        if (authToken == null){
+//            throw new ResponseException(400, "You are not signed in.");
+//        }
         String gameID = params[0];
         server.observeGame(Integer.valueOf(gameID), authToken);
         state = State.INGAME;
