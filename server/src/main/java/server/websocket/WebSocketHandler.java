@@ -156,6 +156,11 @@ public class WebSocketHandler {
     private void leaveGame(Session session, String username, LeaveGameCommand command) {
         try{
             System.out.println("in leaveGame()");
+            Integer gameID = command.getGameID();
+
+            connections.remove(gameID, username);
+            NotificationMessage notification = new NotificationMessage(username + " has left the game.");
+            connections.broadcast(gameID, username, notification);
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage("Unable to leave game");

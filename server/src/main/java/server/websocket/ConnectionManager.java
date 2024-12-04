@@ -20,8 +20,18 @@ public class ConnectionManager {
 //        connections.computeIfAbsent(gameID, k-> new ArrayList<>()).add(connection);//put(gameID, connection);
     }
 
-    public void remove(Integer gameID) {
-        connections.remove(gameID);
+    public void remove(Integer gameID, String username) {
+//        connections.remove(gameID);
+        var gameConnections = connections.get(gameID);
+
+        if (gameConnections != null) {
+            gameConnections.remove(username);
+
+            if (gameConnections.isEmpty()) {
+                connections.remove(gameID);
+            }
+        }
+
     }
 
 

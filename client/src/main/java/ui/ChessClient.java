@@ -18,6 +18,7 @@ public class ChessClient{//} implements ServerMessageObserver{
 //    private WebSocketCommunicator webSocketCommunicator;
 //    private ChessBoard chessBoard;
     private String authToken = null;
+    private Integer currGameID;
 
 
 
@@ -43,7 +44,7 @@ public class ChessClient{//} implements ServerMessageObserver{
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 //in game
-//                case "make_move" -> makeMove(params);
+                case "leave" -> leave();
 
                 default -> help();
             };
@@ -116,6 +117,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             return e.getMessage();
         }
     }
+
     private String logout() throws ResponseException {
 //        if (authToken == null){
 //            throw new ResponseException(400, "You are not signed in.");
@@ -169,9 +171,9 @@ public class ChessClient{//} implements ServerMessageObserver{
 
         server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
         state = State.INGAME;
+        currGameID = Integer.valueOf(gameID);
         return "Successfully joined";
     }
-
     private String observeGame(String... params) throws ResponseException {
         if (state != State.SIGNEDIN){return help();}
 
@@ -184,7 +186,15 @@ public class ChessClient{//} implements ServerMessageObserver{
         String gameID = params[0];
         server.observeGame(Integer.valueOf(gameID), authToken);
         state = State.INGAME;
+        currGameID = Integer.valueOf(gameID);
         return "Succesfully joined";
+    }
+
+    private String leave() {
+        if (state != State.INGAME){return help();}
+        server.leaveGame(authToken, currGameID);
+        state = State.SIGNEDIN;
+        return "Succesfully left the game";
     }
 
 
@@ -195,9 +205,9 @@ public class ChessClient{//} implements ServerMessageObserver{
     public String getUsername(){
         return username;
     }
-    public String getPlayerColor(){
-        return server.getCurrColor();
-    }
+//    public String getPlayerColor(){
+//        return server.getCurrColor();
+//    }
 
     public void printBoard(GameData gameData){
         Renderer renderer = new Renderer(gameData, username);
