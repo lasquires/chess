@@ -147,7 +147,7 @@ public class ServerFacade{
 //        webSocketCommunicator.sendMessage(message);
 
 
-        return "joined successfully";
+        return "joined "+ gameID + "successfully \n";
 //        //In the future fix this
 //        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
 //        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
@@ -165,7 +165,7 @@ public class ServerFacade{
         ConnectCommand connectCommand = new ConnectCommand(authToken, serverGameID);
         NotificationMessage notification = new NotificationMessage("Observing game: " + serverGameID);
         webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
-        return "Now observing game: " + serverGameID;
+        return "Now observing game: " + serverGameID + "\n";
         //future change w websocket?
 //        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }

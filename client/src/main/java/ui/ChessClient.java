@@ -8,7 +8,7 @@ import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
-public class ChessClient implements ServerMessageObserver{
+public class ChessClient{//} implements ServerMessageObserver{
     private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
     private final ServerMessageObserver serverMessageObserver;
@@ -19,7 +19,7 @@ public class ChessClient implements ServerMessageObserver{
 
 
     public ChessClient(String serverUrl, ServerMessageObserver serverMessageObserver) {
-        server = new ServerFacade(serverUrl, this);
+        server = new ServerFacade(serverUrl, serverMessageObserver);
         this.serverMessageObserver = serverMessageObserver;
     }
 
@@ -166,13 +166,14 @@ public class ChessClient implements ServerMessageObserver{
 //    public void notify(ServerMessage message) {
 //        System.out.println("Server Update: " + message);
 //    }
-    @Override
-    public void notify(ServerMessage message) {
-        if (message instanceof NotificationMessage notification) {
-            System.out.println(notification.getMessage());
-        } else {
-            System.out.println("Unknown server message type: " + message);
-        }
-    }
+//    @Override
+//    public void notify(ServerMessage message) {
+//        if (message instanceof NotificationMessage notification) {
+//            System.out.println(notification.getMessage());
+//        } else {
+//            System.out.println("Unknown server message type: " + message);
+//        }
+//
+//    }
 
 }
