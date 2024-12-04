@@ -4,21 +4,26 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.GameData;
 
 import java.util.Objects;
 
 public class Renderer {
-    static StringBuilder sb;
-    static ChessBoard chessBoard;
+    private static StringBuilder sb;
+    private static ChessBoard chessBoard;
+    private static GameData gameData;
+    private String username;
 
 
-    public Renderer(ChessGame game){
-        chessBoard = game.getBoard();
+    public Renderer(GameData gameData, String username){
+        this.gameData = gameData;
+        chessBoard = gameData.game().getBoard();
+        this.username = username;
 
     }
-    public String getRender(String color){
+    public String getRender(){
         sb = new StringBuilder();
-        if (color != null && color.equalsIgnoreCase("BLACK")){
+        if (Objects.equals(gameData.blackUsername(), username)){
             buildBlackBoard();
         }
         else{

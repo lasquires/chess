@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -169,6 +170,11 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
     public String getPlayerColor(){
         return server.getCurrColor();
+    }
+
+    public void printBoard(GameData gameData){
+        Renderer renderer = new Renderer(gameData, username);
+        System.out.println("\n"+renderer.getRender());
     }
 
 //    @Override

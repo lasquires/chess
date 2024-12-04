@@ -53,9 +53,11 @@ public class Repl implements ServerMessageObserver{
                 LoadGameMessage loadGameMessage = (LoadGameMessage) message;
 
                 GameData gameData = loadGameMessage.getGame();
-                String playerColor = client.getPlayerColor();
-                renderer = new Renderer(gameData.game());
-                System.out.println("\n"+ renderer.getRender(playerColor));
+
+                client.printBoard(gameData);
+//                String playerColor = client.getPlayerColor();
+//                renderer = new Renderer(gameData.game());
+//                System.out.println("\n"+ renderer.getRender(playerColor));
                 // Let Chess Client deal with logic? so that we do need to rewrite everything...
 
             }
