@@ -147,6 +147,7 @@ public class ChessClient{//} implements ServerMessageObserver{
                     quit - playing chess
                     help - with possible commands
                     """;
+
         }
         else {
             return """

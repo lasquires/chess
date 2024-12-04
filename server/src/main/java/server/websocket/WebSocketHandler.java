@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -17,7 +16,6 @@ import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -103,7 +101,15 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) {
         System.out.println("In connect(): username = " + username + ", gameID = " + command.getGameID());
         try{
-            String role = findRole(username, command.getGameID());
+            //curr gameData
+            GameData gameData = new DataAccess().getGameDAO().getGame(command.getGameID());
+
+            //send loaded game to player
+            LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);
+            session.getRemote().sendString(new Gson().toJson(loadGameMessage));
+
+            //notify other players
+            String role = findRole(username, gameData);
             connections.add(username, command.getGameID(), session);
             String message = username + " connected to the game " + role;
             NotificationMessage notification = new NotificationMessage(message);
@@ -121,8 +127,8 @@ public class WebSocketHandler {
         //A user connected to the game as an observer. The notification message should include the observer’s name.
     }
 
-    private String findRole(String username, Integer gameID) throws DataAccessException {
-        GameData gameData = new DataAccess().getGameDAO().getGame(gameID);
+    private String findRole(String username, GameData gameData) throws DataAccessException {
+//        GameData gameData = new DataAccess().getGameDAO().getGame(gameID);
         String whiteUsername = gameData.whiteUsername();
         String blackUsername = gameData.blackUsername();
 
