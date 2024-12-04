@@ -10,7 +10,8 @@ import websocket.messages.ServerMessage;
 import java.util.Arrays;
 
 public class ChessClient{//} implements ServerMessageObserver{
-    private String state = "[LOGGED_OUT]";
+//    private String state = "[LOGGED_OUT]";
+    private State state = State.SIGNEDOUT;
     private final ServerFacade server;
     private final ServerMessageObserver serverMessageObserver;
     private String username;
@@ -36,12 +37,47 @@ public class ChessClient{//} implements ServerMessageObserver{
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "logout" -> logout();
+                //logged in
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
+                //in game
+//                case "make_move" -> makeMove(params);
+
                 default -> help();
             };
+    }
+
+    public String help() {
+        return switch (state) {
+            case SIGNEDOUT -> """
+                Options:
+                login <USERNAME> <PASSWORD> - existing user account
+                register <USERNAME> <PASSWORD> <EMAIL> - new user account
+                quit - Exit the program
+                help - with possible commands
+                """;
+            case SIGNEDIN -> """
+                Options:
+                create <NAME> - a game
+                list - games
+                join <ID> [WHITE|BLACK] - a game
+                observe <ID> - a game
+                logout - when you are done
+                quit - playing chess
+                help - with possible commands
+                """;
+            case INGAME -> """
+                Options:
+                make_move <START><END> - make a move (e.g., e2e4)
+                resign - concede the game
+                leave - leave the game
+                highlight <POSITION> - show legal moves for a piece (e.g., e2)
+                quit - playing chess
+                help - with possible commands
+                """;
+        };
     }
 
     private String register(String... params) throws ResponseException {
@@ -56,7 +92,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         try {
             AuthData authData = server.register(username, password, email);
             authToken = authData.authToken();
-            state = "[LOGGED_IN]";
+            state = State.SIGNEDIN;//"[LOGGED_IN]";
             System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
@@ -73,21 +109,20 @@ public class ChessClient{//} implements ServerMessageObserver{
         try {
             AuthData authData = server.login(username, password);
             authToken = authData.authToken();
-            state = "[LOGGED_IN]";
+            state = State.SIGNEDIN;//"[LOGGED_IN]";
             System.out.println("Logged in as "+ username+ "\n");
             return help();
         } catch (ResponseException e) {
             return e.getMessage();
         }
     }
-
     private String logout() throws ResponseException {
         if (authToken == null){
             throw new ResponseException(400, "You are not signed in.");
         }
         server.logout(authToken);
         authToken = null;
-        state = "[LOGGED_OUT]";
+        state = State.SIGNEDOUT;//"[LOGGED_OUT]";
         return "logged out.";
 
     }
@@ -125,8 +160,11 @@ public class ChessClient{//} implements ServerMessageObserver{
         String gameID = params[0];
         String playerColor = params[1].toUpperCase();
 
-        return server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
+        server.joinGame(Integer.valueOf(gameID), playerColor, authToken);
+        state = State.INGAME;
+        return "Successfully joined";
     }
+
     private String observeGame(String... params) throws ResponseException {
         if (params.length != 1){
             throw new ResponseException(400, "Expected 1 argument, "+ params.length + " given.");
@@ -135,35 +173,15 @@ public class ChessClient{//} implements ServerMessageObserver{
             throw new ResponseException(400, "You are not signed in.");
         }
         String gameID = params[0];
-        return server.observeGame(Integer.valueOf(gameID), authToken);
+        server.observeGame(Integer.valueOf(gameID), authToken);
+        state = State.INGAME;
+        return "Succesfully joined";
     }
 
-    public String help(){
-        if (authToken != null){
-            return """
-                    Options:
-                    create <NAME> - a game
-                    list - games
-                    join <ID> [WHITE|BLACK] - a game
-                    observe <ID> - a game
-                    logout - when you are done
-                    quit - playing chess
-                    help - with possible commands
-                    """;
 
-        }
-        else {
-            return """
-                    Options:
-                    login <USERNAME> <PASSWORD> - existing user account
-                    register <USERNAME> <PASSWORD> <EMAIL> - new user account
-                    quit - Exit the program
-                    help - with possible commands
-                    """;
-        }
-    }
+
     public String getState(){
-        return state;
+        return state.toString();
     }
     public String getUsername(){
         return username;
