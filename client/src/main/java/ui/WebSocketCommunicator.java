@@ -29,12 +29,12 @@ public class WebSocketCommunicator extends Endpoint{
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println("in onMessage() inside of WebsocketCommunicator");
-                    System.out.println("Raw message: " + message);
+//                    System.out.println("in onMessage() inside of WebsocketCommunicator");
+//                    System.out.println("Raw message: " + message);
 
                     NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
 
-                    System.out.println("Notification received: " + notification.getMessage());
+//                    System.out.println("Notification received: " + notification.getMessage());
                     observer.notify(notification);
 //                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
 //                    observer.notify(serverMessage);
