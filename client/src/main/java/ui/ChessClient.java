@@ -1,11 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
@@ -19,6 +16,8 @@ public class ChessClient{//} implements ServerMessageObserver{
 //    private ChessBoard chessBoard;
     private String authToken = null;
     private Integer currGameID;
+    private GameData gameData;
+    Renderer renderer;
 
 
 
@@ -45,6 +44,8 @@ public class ChessClient{//} implements ServerMessageObserver{
                 case "observe" -> observeGame(params);
                 //in game
                 case "leave" -> leave();
+                case "redraw" -> drawBoard(gameData);
+
 
                 default -> help();
             };
@@ -71,6 +72,7 @@ public class ChessClient{//} implements ServerMessageObserver{
                 """;
             case INGAME -> """
                 Options:
+                redraw - chess board
                 make_move <START><END> - make a move (e.g., e2e4)
                 resign - concede the game
                 leave - leave the game
@@ -209,9 +211,10 @@ public class ChessClient{//} implements ServerMessageObserver{
 //        return server.getCurrColor();
 //    }
 
-    public void printBoard(GameData gameData){
-        Renderer renderer = new Renderer(gameData, username);
-        System.out.println("\n"+renderer.getRender());
+    public String drawBoard(GameData gameData){
+        this.gameData = gameData;
+        renderer = new Renderer(gameData, username);
+        return "\n"+renderer.getRender();
     }
 
 //    @Override

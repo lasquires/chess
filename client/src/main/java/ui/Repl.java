@@ -54,7 +54,8 @@ public class Repl implements ServerMessageObserver{
 
                 GameData gameData = loadGameMessage.getGame();
 
-                client.printBoard(gameData);
+                client.drawBoard(gameData);
+                System.out.println(SET_TEXT_COLOR_GREEN + client.drawBoard(gameData));
 //                String playerColor = client.getPlayerColor();
 //                renderer = new Renderer(gameData.game());
 //                System.out.println("\n"+ renderer.getRender(playerColor));
@@ -63,17 +64,16 @@ public class Repl implements ServerMessageObserver{
             }
             case NOTIFICATION -> {
                 NotificationMessage notification = (NotificationMessage) message;
-                System.out.println(notification.getMessage());
+                System.out.println(SET_TEXT_COLOR_GREEN + "\n" + notification.getMessage());
             }
             case ERROR -> {
                 ErrorMessage errorMessage = (ErrorMessage) message;
-                System.out.println(errorMessage.getErrorMessage());
+                System.out.println(SET_TEXT_COLOR_GREEN + "\n" + errorMessage.getErrorMessage());
 
             }
-            default -> {
-                System.out.println("Unhandled message type: " + message.getServerMessageType());
-            }
+            default -> System.out.println(SET_TEXT_COLOR_GREEN + "\n" + "unknown message type: " + message.getServerMessageType());
         }
+        printPrompt();
     }
 
 //    @Override
