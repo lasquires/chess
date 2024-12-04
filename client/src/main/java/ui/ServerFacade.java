@@ -136,6 +136,7 @@ public class ServerFacade{
         //added for websocket
         String message = new Gson().toJson(request);
 
+        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
 
         if (webSocketCommunicator == null) {
             throw new IllegalStateException("WebSocket is not connected");
@@ -149,7 +150,6 @@ public class ServerFacade{
 
         return "joined "+ gameID + "successfully \n";
 //        //In the future fix this
-//        GameData gameData = httpCommunicator.makeRequest("PUT", path, request, GameData.class, authToken);
 //        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 

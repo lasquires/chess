@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -25,6 +26,7 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private final AuthDAO authDAO = new DataAccess().getAuthDAO();
+//    private final GameDAO gameDAO = new DataAccess().getGameDAO();
 
     public WebSocketHandler() throws DataAccessException {
     }
@@ -101,12 +103,13 @@ public class WebSocketHandler {
     private void connect(Session session, String username, ConnectCommand command) {
         System.out.println("In connect(): username = " + username + ", gameID = " + command.getGameID());
         try{
+            String role = findRole(username, command.getGameID());
             connections.add(username, command.getGameID(), session);
-            String message = username + " connected to the game.";
+            String message = username + " connected to the game " + role;
             NotificationMessage notification = new NotificationMessage(message);
             connections.broadcast(command.getGameID(), username, notification);
 
-            System.out.println("User " + username + " connected to game ID " + command.getGameID());
+            System.out.println("User " + username + " connected to game ID " + command.getGameID() + role);
 //            System.out.println(command.getGameID());
         }
         catch (Exception ex){
@@ -116,6 +119,20 @@ public class WebSocketHandler {
         // The notification message should include the player’s name and which side they are playing (black or white).
 
         //A user connected to the game as an observer. The notification message should include the observer’s name.
+    }
+
+    private String findRole(String username, Integer gameID) throws DataAccessException {
+        GameData gameData = new DataAccess().getGameDAO().getGame(gameID);
+        String whiteUsername = gameData.whiteUsername();
+        String blackUsername = gameData.blackUsername();
+
+        if (whiteUsername != null && whiteUsername.equals(username)){
+            return "as white.";
+        }
+        if (blackUsername != null && blackUsername.equals(username)){
+            return "as black.";
+        }
+        return "as an observer.";
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) {
