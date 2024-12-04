@@ -41,6 +41,7 @@ public class ServerFacade{
     private ServerMessageObserver serverMessageObserver;
     private Session session;
     private HttpCommunicator httpCommunicator;
+    private String currColor = null;
 
 
     public ServerFacade(String url, ServerMessageObserver serverMessageObserver) {
@@ -110,6 +111,7 @@ public class ServerFacade{
             if (game.containsKey("blackUsername")){
                 blackUsername = game.get("blackUsername").toString();
             }
+
             outString += String.format("%d.\tGame name: %s \tWhite: %s\tBlack: %s\n", index, gameName, whiteUsername, blackUsername);
             index++;
         }
@@ -147,6 +149,7 @@ public class ServerFacade{
         webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
 //        webSocketCommunicator.sendMessage(message);
 
+        currColor = playerColor;
 
         return "joined "+ gameID + "successfully \n";
 //        //In the future fix this
@@ -161,7 +164,7 @@ public class ServerFacade{
         String path = "/game";
 
         Integer serverGameID = clientGameIDMap.get(gameID);
-
+        currColor = null;
         ConnectCommand connectCommand = new ConnectCommand(authToken, serverGameID);
         NotificationMessage notification = new NotificationMessage("Observing game: " + serverGameID);
         webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
@@ -169,7 +172,9 @@ public class ServerFacade{
         //future change w websocket?
 //        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
-
+    public String getCurrColor(){
+        return this.currColor;
+    }
 //    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
 //        try {
 //            URL url = (new URI(serverUrl + path)).toURL();

@@ -1,6 +1,9 @@
 package ui;
 
 
+import model.GameData;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -40,16 +43,38 @@ public class Repl implements ServerMessageObserver{
     private void printPrompt() {
         System.out.print(RESET_TEXT_COLOR + client.getState() + " >>> " + SET_TEXT_COLOR_GREEN);
     }
+
+
     @Override
     public void notify(ServerMessage message) {
-        if (message instanceof NotificationMessage notification) {
-            System.out.println("\n"+notification.getMessage());
-            printPrompt();
-        } else {
-            System.out.println("Unknown server message type: " + message);
-        }
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> {
+                LoadGameMessage loadGameMessage = (LoadGameMessage) message;
 
+                GameData gameData = loadGameMessage.getGame();
+//                String username = client.getUsername();
+                String playerColor = client.getPlayerColor();
+//                System.out.println(message);
+                Render render = new Render(gameData.game(), playerColor);
+                System.out.println("\n"+render.getRender());
+                // Redraw the board
+
+            }
+            case NOTIFICATION -> {
+                NotificationMessage notification = (NotificationMessage) message;
+                System.out.println(((NotificationMessage) message).getMessage());
+            }
+            case ERROR -> {
+                ErrorMessage errorMessage = (ErrorMessage) message;
+                System.out.println(message);
+
+            }
+            default -> {
+                System.out.println("Unhandled message type: " + message.getServerMessageType());
+            }
+        }
     }
+
 //    @Override
 //    public void notify(ServerMessage message) {
 //        System.out.println(SET_TEXT_COLOR_GREEN + message);

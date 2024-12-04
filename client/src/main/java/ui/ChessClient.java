@@ -12,9 +12,11 @@ public class ChessClient{//} implements ServerMessageObserver{
     private String state = "[LOGGED_OUT]";
     private final ServerFacade server;
     private final ServerMessageObserver serverMessageObserver;
+    private String username;
 //    private WebSocketCommunicator webSocketCommunicator;
 //    private ChessBoard chessBoard;
     private String authToken = null;
+
 
 
 
@@ -47,7 +49,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             throw new ResponseException(400, "Expected 3 arguments, "+ params.length + " given.");
         }
 
-        String username = params[0];
+        username = params[0];
         String password = params[1];
         String email = params[2];
         try {
@@ -65,7 +67,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 arguments, "+ params.length + " given.");
         }
-        String username = params[0];
+        username = params[0];
         String password = params[1];
         try {
             AuthData authData = server.login(username, password);
@@ -161,6 +163,12 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
     public String getState(){
         return state;
+    }
+    public String getUsername(){
+        return username;
+    }
+    public String getPlayerColor(){
+        return server.getCurrColor();
     }
 
 //    @Override

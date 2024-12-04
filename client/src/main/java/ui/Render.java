@@ -14,10 +14,10 @@ public class Render {
     static ChessBoard chessBoard;
 
 
-    public Render(ChessBoard board, Color color){
-        chessBoard = board;
+    public Render(ChessGame game, String color){
+        chessBoard = game.getBoard();
         sb = new StringBuilder();
-        if (color == Color.BLACK){
+        if (color != null && color.equalsIgnoreCase("BLACK")){
             buildBlackBoard();
         }
         else{
@@ -148,4 +148,6 @@ public class Render {
             }
         }
     }
+
+
 }
