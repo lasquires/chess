@@ -4,18 +4,19 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import model.GameData;
 
-import java.awt.*;
 import java.util.Objects;
 
-public class Render {
+public class Renderer {
     static StringBuilder sb;
     static ChessBoard chessBoard;
 
 
-    public Render(ChessGame game, String color){
+    public Renderer(ChessGame game){
         chessBoard = game.getBoard();
+
+    }
+    public String getRender(String color){
         sb = new StringBuilder();
         if (color != null && color.equalsIgnoreCase("BLACK")){
             buildBlackBoard();
@@ -23,8 +24,6 @@ public class Render {
         else{
             buildWhiteBoard();
         }
-    }
-    public String getRender(){
         return sb.toString();
     }
 

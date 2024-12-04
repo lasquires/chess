@@ -11,6 +11,7 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 public class Repl implements ServerMessageObserver{
     private final ChessClient client;
+    private Renderer renderer;
 
 
     public Repl(String serverUrl) {
@@ -52,21 +53,19 @@ public class Repl implements ServerMessageObserver{
                 LoadGameMessage loadGameMessage = (LoadGameMessage) message;
 
                 GameData gameData = loadGameMessage.getGame();
-//                String username = client.getUsername();
                 String playerColor = client.getPlayerColor();
-//                System.out.println(message);
-                Render render = new Render(gameData.game(), playerColor);
-                System.out.println("\n"+render.getRender());
-                // Redraw the board
+                renderer = new Renderer(gameData.game());
+                System.out.println("\n"+ renderer.getRender(playerColor));
+                // Let Chess Client deal with logic? so that we do need to rewrite everything...
 
             }
             case NOTIFICATION -> {
                 NotificationMessage notification = (NotificationMessage) message;
-                System.out.println(((NotificationMessage) message).getMessage());
+                System.out.println(notification.getMessage());
             }
             case ERROR -> {
                 ErrorMessage errorMessage = (ErrorMessage) message;
-                System.out.println(message);
+                System.out.println(errorMessage.getErrorMessage());
 
             }
             default -> {

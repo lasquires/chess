@@ -153,7 +153,7 @@ public class ServerFacade{
 
         return "joined "+ gameID + "successfully \n";
 //        //In the future fix this
-//        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
+//        return new Renderer(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
 
     public String observeGame(Integer gameID, String authToken) throws ResponseException {
@@ -170,7 +170,7 @@ public class ServerFacade{
         webSocketCommunicator.sendMessage(new Gson().toJson(connectCommand));
         return "Now observing game: " + serverGameID + "\n";
         //future change w websocket?
-//        return new Render(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
+//        return new Renderer(new ChessGame().getBoard(), Color.BLACK).getRender();//buildBoards(new GameData(0, null, null, null, new ChessGame()));
     }
     public String getCurrColor(){
         return this.currColor;
