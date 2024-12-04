@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import exception.ResponseException;
 import model.AuthData;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class ChessClient implements ServerMessageObserver{
 
 
     public ChessClient(String serverUrl, ServerMessageObserver serverMessageObserver) {
-        server = new ServerFacade(serverUrl, serverMessageObserver);
+        server = new ServerFacade(serverUrl, this);
         this.serverMessageObserver = serverMessageObserver;
     }
 
@@ -161,8 +162,17 @@ public class ChessClient implements ServerMessageObserver{
         return state;
     }
 
+//    @Override
+//    public void notify(ServerMessage message) {
+//        System.out.println("Server Update: " + message);
+//    }
     @Override
     public void notify(ServerMessage message) {
-        System.out.println("Server Update: " + message);
+        if (message instanceof NotificationMessage notification) {
+            System.out.println(notification.getMessage());
+        } else {
+            System.out.println("Unknown server message type: " + message);
+        }
     }
+
 }

@@ -18,7 +18,7 @@ public class Connection {
     }
 
     public void send(String msg) throws IOException {
-//        session.getRemote().sendString(msg);
-        session.getRemote().sendString(new Gson().toJson(msg));
+        session.getRemote().sendString(msg);
+//        session.getRemote().sendString(new Gson().toJson(msg));
     }
 }

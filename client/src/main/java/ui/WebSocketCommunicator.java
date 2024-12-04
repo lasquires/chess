@@ -1,6 +1,7 @@
 package ui;
 
 import com.google.gson.Gson;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -28,8 +29,15 @@ public class WebSocketCommunicator extends Endpoint{
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                    System.out.println("in onMessage() inside of WebsocketCommunicator");
+                    System.out.println("Raw message: " + message);
+
+                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+
+                    System.out.println("Notification received: " + notification.getMessage());
                     observer.notify(notification);
+//                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+//                    observer.notify(serverMessage);
                 }
             });
 
