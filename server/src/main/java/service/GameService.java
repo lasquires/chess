@@ -46,11 +46,15 @@ public class GameService {
         }
         GameData gameData = gameDAO.getGame(gameID);
 
-        if (Objects.equals(playerColor, "BLACK") && gameData.blackUsername()==null){
+        if (Objects.equals(playerColor, "BLACK")
+                && gameData.blackUsername()==null
+                || gameData.blackUsername().equals(username)){
             GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
             gameDAO.updateGame(updatedGame);
         }
-        else if (Objects.equals(playerColor, "WHITE") && gameData.whiteUsername()==null){
+        else if (Objects.equals(playerColor, "WHITE")
+                && (gameData.whiteUsername()==null
+                || gameData.whiteUsername().equals(username))){
             GameData updatedGame = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(updatedGame);
         }
