@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
@@ -79,7 +81,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             case INGAME -> """
                 Options:
                 redraw - chess board
-                make_move <START> <END> - make a move (e.g., e2 e4)
+                make_move <START> <END> <(optional) PROMOTION> - make a move (e.g., e2 e4)
                 resign - concede the game
                 leave - leave the game
                 highlight <POSITION> - show legal moves for a piece (e.g., e2)
@@ -207,16 +209,31 @@ public class ChessClient{//} implements ServerMessageObserver{
         return "Succesfully left the game";
     }
     private String makeMove(String... params) {
-        if (params.length != 2){
-            return "Expected 2 argument, "+ params.length + " given.";
+        if (params.length != 2 && params.length != 3){
+            return "Expected 2 or 3 arguments, "+ params.length + " given.";
         }
         String startPosition = params[0];
         String endPosition = params[1];
+
+        ChessPiece.PieceType promotionPiece = null; // Default is null
+        if (params.length >= 3) {
+            try {
+                promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return "Invalid promotion piece type. Valid options are: QUEEN, ROOK, BISHOP, KNIGHT.";
+            }
+        }
+
         if (!(positionMap.containsKey(startPosition) || positionMap.containsKey(endPosition))){
             return "You entered invalid chess position";
         }
         ChessPosition startPos = positionMap.get(startPosition);
         ChessPosition endPos = positionMap.get(endPosition);
+
+
+//        ChessPiece piece = gameData.game().getBoard().getPiece(startPos);
+        ChessMove move = new ChessMove(startPos, endPos, promotionPiece);
+        server.makeMove(move, currGameID, authToken);
         return "";
     }
 
@@ -230,6 +247,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             return "Invalid chess position";
         }
         ChessPosition chessPosition = positionMap.get(position);
+
         return "";
     }
 

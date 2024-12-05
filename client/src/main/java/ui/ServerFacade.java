@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
@@ -14,6 +11,7 @@ import model.JoinGameRequest;
 import model.UserData;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveGameCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -178,6 +176,13 @@ public class ServerFacade{
         Integer serverGameID = clientGameIDMap.get(gameID);
         LeaveGameCommand leaveGameCommand = new LeaveGameCommand(authToken, serverGameID);
         webSocketCommunicator.sendMessage(new Gson().toJson(leaveGameCommand));
+
+    }
+    public void makeMove(ChessMove move, Integer gameID, String authToken){
+        Integer serverGameID = clientGameIDMap.get(gameID);
+//        MakeMoveCommand makeMoveCommand = new MakeMoveCommand()
+        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, serverGameID, move);
+        webSocketCommunicator.sendMessage((new Gson().toJson(makeMoveCommand)));
 
     }
 //    public String getCurrColor(){

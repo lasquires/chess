@@ -6,6 +6,7 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import model.GameData;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Renderer {
@@ -13,13 +14,14 @@ public class Renderer {
     private static ChessBoard chessBoard;
     private static GameData gameData;
     private String username;
+    Map<String, ChessPosition> positionMap;
 
 
     public Renderer(GameData gameData, String username){
         this.gameData = gameData;
         chessBoard = gameData.game().getBoard();
         this.username = username;
-
+        positionMap = new ChessPositionMapper().getPositionMap();
     }
     public String getRender(){
         sb = new StringBuilder();
