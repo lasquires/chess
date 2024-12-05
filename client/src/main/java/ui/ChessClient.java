@@ -1,10 +1,12 @@
 package ui;
 
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class ChessClient{//} implements ServerMessageObserver{
 //    private String state = "[LOGGED_OUT]";
@@ -18,6 +20,7 @@ public class ChessClient{//} implements ServerMessageObserver{
     private Integer currGameID;
     private GameData gameData;
     Renderer renderer;
+    Map<String, ChessPosition> positionMap;
 
 
 
@@ -25,6 +28,7 @@ public class ChessClient{//} implements ServerMessageObserver{
     public ChessClient(String serverUrl, ServerMessageObserver serverMessageObserver) {
         server = new ServerFacade(serverUrl, serverMessageObserver);
         this.serverMessageObserver = serverMessageObserver;
+        positionMap = new ChessPositionMapper().getPositionMap();
     }
 
     public String eval(String input) throws ResponseException {
@@ -45,6 +49,8 @@ public class ChessClient{//} implements ServerMessageObserver{
                 //in game
                 case "leave" -> leave();
                 case "redraw" -> drawBoard(gameData);
+                case "make_move" -> makeMove(params);
+                case "highlight" -> highlight(params);
 
 
                 default -> help();
@@ -73,7 +79,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             case INGAME -> """
                 Options:
                 redraw - chess board
-                make_move <START><END> - make a move (e.g., e2e4)
+                make_move <START> <END> - make a move (e.g., e2 e4)
                 resign - concede the game
                 leave - leave the game
                 highlight <POSITION> - show legal moves for a piece (e.g., e2)
@@ -131,6 +137,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         return "logged out.";
 
     }
+
     private String createGame(String... params) throws ResponseException {
 
 //        if (authToken == null){
@@ -147,6 +154,7 @@ public class ChessClient{//} implements ServerMessageObserver{
             return "Error: " + e.getMessage();
         }
     }
+
     private String listGames() throws ResponseException {
 //        if (authToken == null){
 //            throw new ResponseException(400, "You are not signed in.");
@@ -191,12 +199,38 @@ public class ChessClient{//} implements ServerMessageObserver{
         currGameID = Integer.valueOf(gameID);
         return "Succesfully joined";
     }
-
     private String leave() {
+
         if (state != State.INGAME){return help();}
         server.leaveGame(authToken, currGameID);
         state = State.SIGNEDIN;
         return "Succesfully left the game";
+    }
+    private String makeMove(String... params) {
+        if (params.length != 2){
+            return "Expected 2 argument, "+ params.length + " given.";
+        }
+        String startPosition = params[0];
+        String endPosition = params[1];
+        if (!(positionMap.containsKey(startPosition) || positionMap.containsKey(endPosition))){
+            return "You entered invalid chess position";
+        }
+        ChessPosition startPos = positionMap.get(startPosition);
+        ChessPosition endPos = positionMap.get(endPosition);
+        return "";
+    }
+
+    private String highlight(String... params) {
+        if (params.length != 1){
+            return "Expected 1 argument, "+ params.length + " given.";
+        }
+
+        String position = params[0];
+        if (!positionMap.containsKey(position)){
+            return "Invalid chess position";
+        }
+        ChessPosition chessPosition = positionMap.get(position);
+        return "";
     }
 
 
@@ -229,6 +263,6 @@ public class ChessClient{//} implements ServerMessageObserver{
 //            System.out.println("Unknown server message type: " + message);
 //        }
 //
-//    }
 
+//    }
 }
