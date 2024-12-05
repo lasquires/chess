@@ -176,19 +176,71 @@ public class WebSocketHandler {
 
             GameData gameData = gameDAO.getGame(gameID);
 
+            ChessGame.TeamColor turn = gameData.game().getTeamTurn();//.toString();
+
+//            ChessGame.TeamColor playerTeam = null;
+//            if(Objects.equals(username, gameData.whiteUsername())){
+//                playerTeam = ChessGame.TeamColor.WHITE;
+//            } else if (Objects.equals(username, gameData.blackUsername())) {
+//                playerTeam = ChessGame.TeamColor.BLACK;
+//            }
             if (gameData.game().isGameOver()){
                 ErrorMessage error = new ErrorMessage("Game has already ended");
                 sendMessage(session.getRemote(), error);
+                return;
             }
-            String turn = gameData.game().getTeamTurn().toString();
+
+
+            String playerTurn = null;
+            if (turn == ChessGame.TeamColor.BLACK){
+                playerTurn = gameData.blackUsername();
+            }
+            if (turn == ChessGame.TeamColor.WHITE){
+                playerTurn = gameData.whiteUsername();
+            }
+
+
+            if (!Objects.equals(username, playerTurn)){
+                ErrorMessage error =  new ErrorMessage("It's not your turn.");
+                sendMessage(session.getRemote(), error);
+                return;
+            }
+
+
             gameData.game().makeMove(move);
 
-            gameDAO.updateGame(gameData);
 
             connections.broadcast(gameID,null,new LoadGameMessage(gameData));
 
+
             connections.broadcast(gameID, username, new NotificationMessage(
                     turn + " moved from " + startPos + " to "+ endPos + "."));
+
+            if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
+                NotificationMessage notificationMessage = new NotificationMessage(
+                        gameData.game().getTeamTurn().toString() + " is in checkmate");
+                connections.broadcast(gameID,null, notificationMessage);
+                gameData.game().setGameOver();
+                gameDAO.updateGame(gameData);
+                return;
+
+            }
+
+            if (gameData.game().isInCheck(gameData.game().getTeamTurn())){
+                NotificationMessage notificationMessage = new NotificationMessage(
+                        gameData.game().getTeamTurn().toString() + " is in check");
+                connections.broadcast(gameID,null, notificationMessage);
+            }
+            if (gameData.game().isInStalemate(gameData.game().getTeamTurn())){
+                NotificationMessage notificationMessage = new NotificationMessage(
+                        "Game has ended in stalemate.");
+                connections.broadcast(gameID,null, notificationMessage);
+                gameData.game().setGameOver();
+
+            }
+
+            gameDAO.updateGame(gameData);
+
 
         }
         catch (Exception ex){
@@ -233,23 +285,23 @@ public class WebSocketHandler {
 
     private void resign(Session session, String username, ResignCommand command) {
         try{
-            System.out.println("in resign()");
+            System.out.println("in setGameOver()");
             Integer gameID = command.getGameID();
             GameData gameData = gameDAO.getGame(gameID);
             if(!gameData.game().isGameOver()){
-                gameData.game().resign();
+                gameData.game().setGameOver();
                 NotificationMessage notificationMessage = new NotificationMessage(username + " resigned.");
                 connections.broadcast(gameID, null, notificationMessage);
             }
             else{
-                ErrorMessage error =  new ErrorMessage("Unable to resign. Game is already over");
+                ErrorMessage error =  new ErrorMessage("Unable to setGameOver. Game is already over");
                 sendMessage(session.getRemote(), error);
             }
 
 
         }
         catch (Exception ex){
-            ErrorMessage error =  new ErrorMessage("Unable to resign");
+            ErrorMessage error =  new ErrorMessage("Unable to setGameOver");
             sendMessage(session.getRemote(), error);
         }
         //A player resigned the game. The notification message should include the player’s name.

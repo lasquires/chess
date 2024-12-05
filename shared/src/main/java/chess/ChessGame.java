@@ -201,7 +201,7 @@ public class ChessGame {
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
             return simulateAllMoves(teamColor);
         }
-        gameOver = true;
+//        gameOver = true;
         return false;
     }
 
@@ -217,7 +217,7 @@ public class ChessGame {
         if(!isInCheck(teamColor)){
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
             //will return if is in stalemate
-            gameOver = true;
+//            gameOver = true;
             return simulateAllMoves(teamColor);
         }
         return false;
@@ -271,7 +271,7 @@ public class ChessGame {
         return this.board;
     }
 
-    public void resign(){
+    public void setGameOver(){
         gameOver = true;
     }
     public boolean isGameOver(){

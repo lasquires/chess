@@ -194,7 +194,7 @@ public class WebSocketTests {
     public void invalidResignObserver() {
         setupNormalGame();
 
-        //have observer try to resign - should reject
+        //have observer try to setGameOver - should reject
         resign(observer, gameID, false, Set.of(white, black), Set.of());
     }
 
@@ -205,7 +205,7 @@ public class WebSocketTests {
         setupNormalGame();
         resign(black, gameID, true, Set.of(white, observer), Set.of());
 
-        //attempt to resign after other player resigns
+        //attempt to setGameOver after other player resigns
         resign(white, gameID, false, Set.of(black, observer), Set.of());
     }
 
@@ -262,7 +262,7 @@ public class WebSocketTests {
         ChessMove move = new ChessMove(new ChessPosition(2, 5), new ChessPosition(3, 5), null);
         makeMove(white, gameID, move, true, false, Set.of(black, observer), Set.of(white2, black2, observer2));
 
-        //resign in second game - only users in second game should be notified
+        //setGameOver in second game - only users in second game should be notified
         resign(white2, otherGameID, true, Set.of(black2, observer2), Set.of(white, black, observer));
 
         //player leave in first game - only users remaining in first game should be notified
