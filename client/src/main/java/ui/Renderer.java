@@ -1,28 +1,39 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.GameData;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Renderer {
     private static StringBuilder sb;
-    private static ChessBoard chessBoard;
-    private static GameData gameData;
+    private ChessBoard chessBoard;
+    private GameData gameData;
     private String username;
-    Map<String, ChessPosition> positionMap;
+    private Map<String, ChessPosition> positionMap;
+    private List<ChessPosition> validEndPositions = new ArrayList<ChessPosition>();
 
 
-    public Renderer(GameData gameData, String username){
+    public Renderer(GameData gameData, String username, Collection<ChessMove> validMoves){
         this.gameData = gameData;
         chessBoard = gameData.game().getBoard();
         this.username = username;
         positionMap = new ChessPositionMapper().getPositionMap();
+
+        if (validMoves!=null && !validMoves.isEmpty()){
+            for (ChessMove move : validMoves){
+                validEndPositions.add(move.getEndPosition());
+            }
+        }
+
     }
+
+//    public String showValidMoves(Collection<ChessMove> validMoves){
+//        this.validMoves = validMoves;
+//        String board = getRender();
+//        return board;
+//    }
+
     public String getRender(){
         sb = new StringBuilder();
         if (Objects.equals(gameData.blackUsername(), username)){
@@ -34,7 +45,7 @@ public class Renderer {
         return sb.toString();
     }
 
-    private static void buildWhiteBoard() {
+    private void buildWhiteBoard() {
         writeHeader(ChessGame.TeamColor.BLACK);
         for (int row = 8; row >=1; row--) {
             writeRowNum(row);
@@ -47,7 +58,7 @@ public class Renderer {
         writeHeader(ChessGame.TeamColor.BLACK);
     }
 
-    private static void buildBlackBoard() {
+    private void buildBlackBoard() {
         writeHeader(ChessGame.TeamColor.WHITE);
         for (int row = 1; row <= 8; row++) {
             writeRowNum(row);
@@ -60,16 +71,21 @@ public class Renderer {
         writeHeader(ChessGame.TeamColor.WHITE);
     }
 
-    private static void buildBoard(int row, int col, ChessBoard chessBoard) {
+    private void buildBoard(int row, int col, ChessBoard chessBoard) {
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = chessBoard.getPiece(position);
         boolean whiteSquare = (row + col) % 2 == 1;
+        boolean showMove = validEndPositions.contains(position);
 
         // Set square color
         if (whiteSquare) {
-            sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_YELLOW);//WHITE);
+            if (showMove){sb.append(EscapeSequences.SET_BG_COLOR_MAGENTA);}
+
+            else{sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_YELLOW);}//WHITE)}
         } else {
-            sb.append(EscapeSequences.SET_BG_COLOR_DARK_OLIVE_GREEN3);//GREY);
+            if (showMove){sb.append(EscapeSequences.SET_BG_COLOR_RED);}
+            else{sb.append(EscapeSequences.SET_BG_COLOR_DARK_OLIVE_GREEN3);}//GREY);
+            //if valid move, brown
         }
 
         //fill in the squares
@@ -154,6 +170,5 @@ public class Renderer {
             }
         }
     }
-
 
 }

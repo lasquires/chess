@@ -7,8 +7,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 public class ChessClient{//} implements ServerMessageObserver{
 //    private String state = "[LOGGED_OUT]";
@@ -246,9 +245,16 @@ public class ChessClient{//} implements ServerMessageObserver{
         if (!positionMap.containsKey(position)){
             return "Invalid chess position";
         }
-        ChessPosition chessPosition = positionMap.get(position);
 
-        return "";
+        ChessPosition startPosition = positionMap.get(position);
+//        ChessPiece piece = gameData.game().getBoard().getPiece(chessPosition);
+        Collection<ChessMove> validMoves = gameData.game().validMoves(startPosition);
+
+        renderer = new Renderer(gameData, username, validMoves);
+        return "\n"+renderer.getRender();
+
+
+//        return "";
     }
 
 
@@ -265,7 +271,7 @@ public class ChessClient{//} implements ServerMessageObserver{
 
     public String drawBoard(GameData gameData){
         this.gameData = gameData;
-        renderer = new Renderer(gameData, username);
+        renderer = new Renderer(gameData, username, null);
         return "\n"+renderer.getRender();
     }
 
