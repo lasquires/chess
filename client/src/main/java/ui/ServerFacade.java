@@ -12,6 +12,7 @@ import model.UserData;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveGameCommand;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -184,6 +185,12 @@ public class ServerFacade{
         MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, serverGameID, move);
         webSocketCommunicator.sendMessage((new Gson().toJson(makeMoveCommand)));
 
+    }
+
+    public void resign(String authToken, Integer gameID) {
+        Integer serverGameID = clientGameIDMap.get(gameID);
+        ResignCommand resignCommand = new ResignCommand(authToken, gameID);
+        webSocketCommunicator.sendMessage(new Gson().toJson(resignCommand));
     }
 //    public String getCurrColor(){
 //        return this.currColor;

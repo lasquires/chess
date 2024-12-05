@@ -290,6 +290,7 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.getGame(gameID);
             if(!gameData.game().isGameOver()){
                 gameData.game().setGameOver();
+                gameDAO.updateGame(gameData);
                 NotificationMessage notificationMessage = new NotificationMessage(username + " resigned.");
                 connections.broadcast(gameID, null, notificationMessage);
             }

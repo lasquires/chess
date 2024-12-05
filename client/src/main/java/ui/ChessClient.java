@@ -52,10 +52,17 @@ public class ChessClient{//} implements ServerMessageObserver{
                 case "redraw" -> drawBoard(gameData);
                 case "make_move" -> makeMove(params);
                 case "highlight" -> highlight(params);
+                case "resign" -> resign();
 
 
                 default -> help();
             };
+    }
+
+    private String resign() {
+        if (state != State.INGAME){return help();}
+        server.resign(authToken, currGameID);
+        return "";
     }
 
     public String help() {
