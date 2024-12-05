@@ -191,16 +191,19 @@ public class WebSocketHandler {
             }
 
 
-            String playerTurn = null;
+            String attackingPlayer = null;
+            String defendingPlayer = null;
             if (turn == ChessGame.TeamColor.BLACK){
-                playerTurn = gameData.blackUsername();
+                attackingPlayer = gameData.blackUsername();
+                defendingPlayer = gameData.whiteUsername();
             }
             if (turn == ChessGame.TeamColor.WHITE){
-                playerTurn = gameData.whiteUsername();
+                attackingPlayer = gameData.whiteUsername();
+                defendingPlayer = gameData.blackUsername();
             }
 
 
-            if (!Objects.equals(username, playerTurn)){
+            if (!Objects.equals(username, attackingPlayer)){
                 ErrorMessage error =  new ErrorMessage("It's not your turn.");
                 sendMessage(session.getRemote(), error);
                 return;
@@ -217,8 +220,8 @@ public class WebSocketHandler {
                     turn + " moved from " + startPos + " to "+ endPos + "."));
 
             if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
-                NotificationMessage notificationMessage = new NotificationMessage(
-                        gameData.game().getTeamTurn().toString() + " is in checkmate");
+
+                NotificationMessage notificationMessage = new NotificationMessage(defendingPlayer+ " is in checkmate");
                 connections.broadcast(gameID,null, notificationMessage);
                 gameData.game().setGameOver();
                 gameDAO.updateGame(gameData);
@@ -227,13 +230,11 @@ public class WebSocketHandler {
             }
 
             if (gameData.game().isInCheck(gameData.game().getTeamTurn())){
-                NotificationMessage notificationMessage = new NotificationMessage(
-                        gameData.game().getTeamTurn().toString() + " is in check");
+                NotificationMessage notificationMessage = new NotificationMessage(defendingPlayer+ " is in check");
                 connections.broadcast(gameID,null, notificationMessage);
             }
             if (gameData.game().isInStalemate(gameData.game().getTeamTurn())){
-                NotificationMessage notificationMessage = new NotificationMessage(
-                        "Game has ended in stalemate.");
+                NotificationMessage notificationMessage = new NotificationMessage("Game has ended in stalemate.");
                 connections.broadcast(gameID,null, notificationMessage);
                 gameData.game().setGameOver();
 
@@ -300,7 +301,7 @@ public class WebSocketHandler {
                 connections.broadcast(gameID, null, notificationMessage);
             }
             else{
-                ErrorMessage error =  new ErrorMessage("Unable to setGameOver. Game is already over");
+                ErrorMessage error =  new ErrorMessage("Game is already over");
                 sendMessage(session.getRemote(), error);
             }
 
