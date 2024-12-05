@@ -64,21 +64,5 @@ public class ConnectionManager {
         if (gameConnections.isEmpty()) {
             connections.remove(targetID);
         }
-
-//        for (var c : gameConnections) {
-//            if (c.session.isOpen()) {
-//                if (!c.username.equals(excludeUserName)) {
-//                    c.send(new Gson().toJson(message));//message.toString());
-//                }
-//            } else {
-//                removeList.add(c);
-//            }
-//        }
-//        //remove what wasn't caught
-//        gameConnections.removeAll(removeList);
-//        // Clean up any connections that were left open.
-//        if (gameConnections.isEmpty()) {
-//            connections.remove(targetID);
-//        }
     }
 }

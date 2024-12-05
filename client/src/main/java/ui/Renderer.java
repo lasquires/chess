@@ -28,12 +28,6 @@ public class Renderer {
 
     }
 
-//    public String showValidMoves(Collection<ChessMove> validMoves){
-//        this.validMoves = validMoves;
-//        String board = getRender();
-//        return board;
-//    }
-
     public String getRender(){
         sb = new StringBuilder();
         if (Objects.equals(gameData.blackUsername(), username)){

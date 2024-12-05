@@ -135,9 +135,7 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
 
     private String logout() throws ResponseException {
-//        if (authToken == null){
-//            throw new ResponseException(400, "You are not signed in.");
-//        }
+
         if (state != State.SIGNEDIN){return help();}
         server.logout(authToken);
         authToken = null;
@@ -148,9 +146,7 @@ public class ChessClient{//} implements ServerMessageObserver{
 
     private String createGame(String... params) throws ResponseException {
 
-//        if (authToken == null){
-//            throw new ResponseException(400, "Must be logged in to create a game");
-//        }
+
         if (state != State.SIGNEDIN){return help();}
 
         String gameName = params[0];
@@ -164,9 +160,7 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
 
     private String listGames() throws ResponseException {
-//        if (authToken == null){
-//            throw new ResponseException(400, "You are not signed in.");
-//        }
+
         if (state != State.SIGNEDIN){return help();}
 
         try{
@@ -181,9 +175,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         if (params.length != 2){
             throw new ResponseException(400, "Expected 2 arguments, "+ params.length + " given.");
         }
-//        if (authToken == null){
-//            throw new ResponseException(400, "You are not signed in.");
-//        }
+
         String gameID = params[0];
         String playerColor = params[1].toUpperCase();
 
@@ -198,9 +190,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         if (params.length != 1){
             throw new ResponseException(400, "Expected 1 argument, "+ params.length + " given.");
         }
-//        if (authToken == null){
-//            throw new ResponseException(400, "You are not signed in.");
-//        }
+
         String gameID = params[0];
         server.observeGame(Integer.valueOf(gameID), authToken);
         state = State.INGAME;
@@ -254,14 +244,12 @@ public class ChessClient{//} implements ServerMessageObserver{
         }
 
         ChessPosition startPosition = positionMap.get(position);
-//        ChessPiece piece = gameData.game().getBoard().getPiece(chessPosition);
         Collection<ChessMove> validMoves = gameData.game().validMoves(startPosition);
 
         renderer = new Renderer(gameData, username, validMoves);
         return "\n"+renderer.getRender();
 
 
-//        return "";
     }
 
 
@@ -272,9 +260,7 @@ public class ChessClient{//} implements ServerMessageObserver{
     public String getUsername(){
         return username;
     }
-//    public String getPlayerColor(){
-//        return server.getCurrColor();
-//    }
+
 
     public String drawBoard(GameData gameData){
         this.gameData = gameData;
@@ -282,18 +268,4 @@ public class ChessClient{//} implements ServerMessageObserver{
         return "\n"+renderer.getRender();
     }
 
-//    @Override
-//    public void notify(ServerMessage message) {
-//        System.out.println("Server Update: " + message);
-//    }
-//    @Override
-//    public void notify(ServerMessage message) {
-//        if (message instanceof NotificationMessage notification) {
-//            System.out.println(notification.getMessage());
-//        } else {
-//            System.out.println("Unknown server message type: " + message);
-//        }
-//
-
-//    }
 }

@@ -21,7 +21,6 @@ public class Repl implements ServerMessageObserver{
     public void run(){
         printPrompt();
         System.out.println(SET_TEXT_COLOR_BLUE +"\n♕ Welcome to Chess. Type Help to get started. ♕");
-//        System.out.println(client.help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -33,8 +32,6 @@ public class Repl implements ServerMessageObserver{
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
                 System.out.println(SET_TEXT_COLOR_BLUE + "Error: " + e.getMessage());
-//                var msg = e.toString();
-//                System.out.print(msg);
             }
         }
         System.out.println();
@@ -56,10 +53,6 @@ public class Repl implements ServerMessageObserver{
 
                 client.drawBoard(gameData);
                 System.out.println(SET_TEXT_COLOR_GREEN + client.drawBoard(gameData));
-//                String playerColor = client.getPlayerColor();
-//                renderer = new Renderer(gameData.game());
-//                System.out.println("\n"+ renderer.getRender(playerColor));
-                // Let Chess Client deal with logic? so that we do need to rewrite everything...
 
             }
             case NOTIFICATION -> {
@@ -76,10 +69,4 @@ public class Repl implements ServerMessageObserver{
         printPrompt();
     }
 
-//    @Override
-//    public void notify(ServerMessage message) {
-//        System.out.println(SET_TEXT_COLOR_GREEN + message);
-//        printPrompt();
-//
-//    }
 }
