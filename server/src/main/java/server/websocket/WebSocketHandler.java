@@ -288,6 +288,11 @@ public class WebSocketHandler {
             System.out.println("in setGameOver()");
             Integer gameID = command.getGameID();
             GameData gameData = gameDAO.getGame(gameID);
+            if (!Objects.equals(username, gameData.whiteUsername()) && !Objects.equals(username, gameData.blackUsername())){
+                ErrorMessage error =  new ErrorMessage("You can't resign as an observer.");
+                sendMessage(session.getRemote(), error);
+                return;
+            }
             if(!gameData.game().isGameOver()){
                 gameData.game().setGameOver();
                 gameDAO.updateGame(gameData);
