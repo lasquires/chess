@@ -60,6 +60,15 @@ public class ChessClient{//} implements ServerMessageObserver{
     }
 
     private String resign() {
+        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
+        System.out.println("Are you sure? enter y or n");
+
+        String response = myObj.nextLine();  // Read user input
+        if (!Objects.equals(response, "y")){
+            return "";
+        }
+
+
         if (state != State.INGAME){return help();}
         server.resign(authToken, currGameID);
         return "";
