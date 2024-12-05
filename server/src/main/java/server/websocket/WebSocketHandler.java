@@ -48,7 +48,6 @@ public class WebSocketHandler {
 
             //put the session in the ConnectionManagerMap
             Integer gameID = command.getGameID();
-            //TODO: make sure that the map is username: session (not gameID)
             connections.add(username, gameID, session);
 //            saveSession(command.getGameID(), session);
 
@@ -150,7 +149,7 @@ public class WebSocketHandler {
         return "as an observer.";
     }
 
-    private Map<ChessPosition, String> ChessPositionMapper() {
+    private Map<ChessPosition, String> chessPositionMapper() {
         Map<ChessPosition, String> positionMap = new HashMap<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
@@ -170,7 +169,7 @@ public class WebSocketHandler {
             Integer gameID = command.getGameID();
             ChessMove move = command.getMove();
 
-            var positionMap = ChessPositionMapper();
+            var positionMap = chessPositionMapper();
 
             String startPos = positionMap.get(move.getStartPosition());
             String endPos = positionMap.get(move.getEndPosition());

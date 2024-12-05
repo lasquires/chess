@@ -10,7 +10,6 @@ import websocket.messages.ServerMessage;
 
 
 public class ConnectionManager {
-    //TODO: make sure that the map is username: session (not gameID)
 //    public final ConcurrentHashMap<Integer, List<Connection>> connections = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, ConcurrentHashMap<String, Connection>> connections = new ConcurrentHashMap<>();
 
