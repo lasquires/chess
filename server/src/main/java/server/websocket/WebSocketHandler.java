@@ -167,6 +167,7 @@ public class WebSocketHandler {
             System.out.println("in makeMove()");
             Integer gameID = command.getGameID();
             ChessMove move = command.getMove();
+
             var positionMap = ChessPositionMapper();
 
             String startPos = positionMap.get(move.getStartPosition());
@@ -174,6 +175,11 @@ public class WebSocketHandler {
 
 
             GameData gameData = gameDAO.getGame(gameID);
+
+            if (gameData.game().isGameOver()){
+                ErrorMessage error = new ErrorMessage("Game has already ended");
+                sendMessage(session.getRemote(), error);
+            }
             String turn = gameData.game().getTeamTurn().toString();
             gameData.game().makeMove(move);
 
@@ -228,6 +234,19 @@ public class WebSocketHandler {
     private void resign(Session session, String username, ResignCommand command) {
         try{
             System.out.println("in resign()");
+            Integer gameID = command.getGameID();
+            GameData gameData = gameDAO.getGame(gameID);
+            if(!gameData.game().isGameOver()){
+                gameData.game().resign();
+                NotificationMessage notificationMessage = new NotificationMessage(username + " resigned.");
+                connections.broadcast(gameID, null, notificationMessage);
+            }
+            else{
+                ErrorMessage error =  new ErrorMessage("Unable to resign. Game is already over");
+                sendMessage(session.getRemote(), error);
+            }
+
+
         }
         catch (Exception ex){
             ErrorMessage error =  new ErrorMessage("Unable to resign");

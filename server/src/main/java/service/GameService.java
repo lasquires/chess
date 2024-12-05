@@ -47,8 +47,8 @@ public class GameService {
         GameData gameData = gameDAO.getGame(gameID);
 
         if (Objects.equals(playerColor, "BLACK")
-                && gameData.blackUsername()==null
-                || gameData.blackUsername().equals(username)){
+                && (gameData.blackUsername()==null
+                || gameData.blackUsername().equals(username))){
             GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
             gameDAO.updateGame(updatedGame);
         }
