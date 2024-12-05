@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
+    private boolean gameOver = false;
 
     @Override
     public String toString() {
@@ -200,6 +201,7 @@ public class ChessGame {
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
             return simulateAllMoves(teamColor);
         }
+        gameOver = true;
         return false;
     }
 
@@ -215,6 +217,7 @@ public class ChessGame {
         if(!isInCheck(teamColor)){
             //simulate all possible moves for all pieces where piece.teamColor()=teamColor;
             //will return if is in stalemate
+            gameOver = true;
             return simulateAllMoves(teamColor);
         }
         return false;
@@ -268,4 +271,10 @@ public class ChessGame {
         return this.board;
     }
 
+    public void resign(){
+        gameOver = true;
+    }
+    public boolean isGameOver(){
+        return gameOver;
+    }
 }
