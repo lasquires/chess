@@ -90,7 +90,7 @@ public class WebSocketCommunicator extends Endpoint{
         try {
             if (session != null && session.isOpen()) {
                 session.getBasicRemote().sendText(message);
-                System.out.println("Sent message: " + message);
+//                System.out.println("Sent message: " + message);
             } else {
                 throw new IllegalStateException("WebSocket session is not connected.");
             }

@@ -108,7 +108,13 @@ public class WebSocketHandler {
         System.out.println("In connect(): username = " + username + ", gameID = " + command.getGameID());
         try{
             //curr gameData
-            GameData gameData = new DataAccess().getGameDAO().getGame(command.getGameID());
+            Integer gameID = command.getGameID();
+            GameData gameData = new DataAccess().getGameDAO().getGame(gameID);
+            if(gameData == null){
+                ErrorMessage error = new ErrorMessage("Unable to connect: Invalid game ID.");
+                sendMessage(session.getRemote(), error);
+                return;
+            }
 
             //send loaded game to player
             LoadGameMessage loadGameMessage = new LoadGameMessage(gameData);

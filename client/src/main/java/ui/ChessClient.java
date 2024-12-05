@@ -212,7 +212,7 @@ public class ChessClient{//} implements ServerMessageObserver{
         if (state != State.INGAME){return help();}
         server.leaveGame(authToken, currGameID);
         state = State.SIGNEDIN;
-        return "Succesfully left the game";
+        return "Succesfully left the game\n";
     }
     private String makeMove(String... params) {
         if (params.length != 2 && params.length != 3){
@@ -245,12 +245,12 @@ public class ChessClient{//} implements ServerMessageObserver{
 
     private String highlight(String... params) {
         if (params.length != 1){
-            return "Expected 1 argument, "+ params.length + " given.";
+            return "Expected 1 argument, "+ params.length + " given.\n";
         }
 
         String position = params[0];
         if (!positionMap.containsKey(position)){
-            return "Invalid chess position";
+            return "Invalid chess position\n";
         }
 
         ChessPosition startPosition = positionMap.get(position);
