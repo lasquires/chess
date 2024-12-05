@@ -83,7 +83,7 @@ public class Renderer {
 
             else{sb.append(EscapeSequences.SET_BG_COLOR_LIGHT_YELLOW);}//WHITE)}
         } else {
-            if (showMove){sb.append(EscapeSequences.SET_BG_COLOR_RED);}
+            if (showMove){sb.append(EscapeSequences.SET_BG_COLOR_DARK_MAGENTA);}
             else{sb.append(EscapeSequences.SET_BG_COLOR_DARK_OLIVE_GREEN3);}//GREY);
             //if valid move, brown
         }
